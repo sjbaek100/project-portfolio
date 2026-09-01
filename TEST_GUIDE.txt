@@ -1,0 +1,37 @@
+ControlProof CSV Test Guide
+
+1) Main functional test
+Upload:
+- controlproof_test_employee_roster.csv
+- controlproof_test_access_export.csv
+
+Expected dashboard around 2026-08-31:
+- Terminated Users With Access: 1
+- Late Deprovisioning (>24h): 1
+- Unmatched Active Accounts: 1
+- Privileged Access Anomalies: 2
+- Dormant Accounts: 2
+- Role Mismatches: 2
+- Recently Modified Records: 8
+
+2) Row-level edge-case test
+Upload:
+- controlproof_edge_employee_roster.csv
+- controlproof_edge_access_export.csv
+
+Expected:
+- Invalid active status -> Insufficient evidence / data quality
+- Missing last_active -> Insufficient evidence / data quality
+- Missing expected_role -> Insufficient evidence / data quality
+- Missing termination_time -> Insufficient evidence / data quality
+- Missing deactivation_time -> Insufficient evidence / data quality
+- Missing provisioning timestamp on privileged record -> Privileged access anomaly
+- Missing approval timestamp on privileged record -> Privileged access anomaly
+
+3) Duplicate employee ID test
+Upload:
+- controlproof_duplicate_employee_roster.csv
+- controlproof_edge_access_export.csv
+
+Expected:
+Analysis stops and shows a duplicate employee_id error for EMP-101.

@@ -1,0 +1,3016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technology Risk, Controls & Access Review</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+
+:root{
+  --bg:#f8f7f5;
+  --paper:#ffffff;
+  --paper-soft:#fbfaf8;
+  --ink:#1a2332;
+  --ink-2:#344054;
+  --muted:#6b7280;
+  --muted-2:#95989a;
+  --line:#dedbd6;
+  --line-2:#c9c5bf;
+  --accent:#3b5998;
+  --accent-2:#2f477c;
+  --accent-soft:#eff1f7;
+  --red:#c93b47;
+  --red-bg:#fef2f2;
+  --amber:#c77a28;
+  --amber-bg:#fefaf3;
+  --green:#188a6d;
+  --green-bg:#f0faf7;
+  --blue:#3b5998;
+  --blue-bg:#f3f5fa;
+  --shadow:0 10px 26px rgba(26,35,50,.045);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Inter',ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,.action-link:focus-visible{
+  outline:2px solid rgba(59,89,152,.35);
+  outline-offset:2px;
+}
+.container{width:min(1180px,calc(100% - 48px));margin:0 auto}
+
+/* ---------- Global header ---------- */
+header{
+  background:rgba(255,255,255,.97);
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  z-index:40;
+}
+header>.container{
+  min-height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:28px;
+}
+.brand-block{display:flex;align-items:center;gap:12px;min-width:240px}
+.brand-mark{
+  width:34px;height:34px;border:1px solid var(--line-2);border-radius:6px;
+  display:grid;place-items:center;background:var(--paper);color:var(--accent);
+  font-family:'Source Serif 4',Georgia,serif;font-weight:600;font-size:14px;
+}
+.brand-copy h1{
+  font-family:'Source Serif 4',Georgia,serif;
+  font-size:18px;line-height:1.1;letter-spacing:-.02em;font-weight:600;color:var(--ink)
+}
+.brand-copy p{font-size:10.5px;color:var(--muted);margin-top:3px}
+nav{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+nav button{
+  border:1px solid transparent;background:transparent;color:var(--muted);
+  padding:8px 11px;border-radius:5px;font-size:12px;font-weight:600
+}
+nav button:hover{background:var(--paper-soft);color:var(--ink)}
+nav button.active{background:var(--accent-soft);border-color:#d9deea;color:var(--accent)}
+.portfolio-note{
+  background:#fff;border-bottom:1px solid var(--line);color:var(--muted);
+  font-size:10.8px;padding:7px 0
+}
+.portfolio-note strong{color:var(--ink-2)}
+
+/* ---------- Typography ---------- */
+.section{padding:30px 0 84px}
+.section-title,
+.hero-title,
+.case-document h2,
+.case-document h3,
+.about-intro h2{
+  font-family:'Source Serif 4',Georgia,serif;
+}
+.section-title{
+  font-size:32px;line-height:1.18;letter-spacing:-.025em;font-weight:500;color:var(--ink);margin:0
+}
+.eyebrow{
+  display:block;color:var(--muted-2);font-size:9.5px;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;margin-bottom:9px
+}
+.page-intro{color:var(--muted);font-size:13.5px;max-width:760px;margin-top:10px;line-height:1.75}
+.muted{color:var(--muted)!important}
+.grid{display:grid;gap:16px}
+.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.buttons{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:18px}
+button.primary,button.secondary{
+  min-height:39px;padding:9px 14px;border-radius:5px;font-size:12px;font-weight:650
+}
+button.primary{background:var(--accent);color:#fff;border:1px solid var(--accent)}
+button.primary:hover:not(:disabled){background:var(--accent-2)}
+button.secondary{background:#fff;color:var(--ink-2);border:1px solid var(--line-2)}
+button.secondary:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+button:disabled{opacity:.42;cursor:not-allowed}
+
+/* ---------- Home ---------- */
+.home-shell{
+  display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.72fr);
+  gap:48px;align-items:start
+}
+.home-main{padding:40px 0 8px}
+.hero-title{
+  font-size:clamp(44px,5vw,64px);line-height:1.06;letter-spacing:-.045em;
+  font-weight:500;max-width:820px;color:var(--ink)
+}
+.hero-sub{
+  font-size:15.5px;line-height:1.8;color:var(--muted);max-width:740px;margin-top:20px
+}
+.credential-line{
+  margin-top:22px;font-size:11.5px;color:var(--ink-2);display:inline-flex;gap:7px;align-items:center
+}
+.credential-line:before{content:"✓";color:var(--green);font-weight:800}
+.home-actions{margin-top:26px}
+.home-aside{
+  background:var(--paper);border:1px solid var(--line);padding:23px 24px;
+  box-shadow:none;border-radius:7px
+}
+.home-aside h3{
+  font-family:'Source Serif 4',Georgia,serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:14px
+}
+.snapshot-list{display:grid}
+.snapshot-row{
+  display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line)
+}
+.snapshot-row:last-child{border-bottom:0}
+.snapshot-row span:first-child{font-size:11.5px;color:var(--muted)}
+.snapshot-row strong{font-size:13px;color:var(--ink);font-weight:700}
+.home-divider{height:1px;background:var(--line);margin:30px 0 30px}
+.home-capabilities{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line)
+}
+.capability{padding:23px 24px 23px 0}
+.capability+.capability{padding-left:24px;border-left:1px solid var(--line)}
+.capability .step-tag{
+  font-size:9px;font-weight:700;color:var(--accent);letter-spacing:.09em;margin-bottom:8px
+}
+.capability h4{
+  font-family:'Source Serif 4',Georgia,serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:6px
+}
+.capability p{font-size:12.2px;color:var(--muted);line-height:1.65}
+.flow-summary{
+  margin-top:24px;display:flex;flex-wrap:wrap;gap:6px 10px;color:var(--muted);font-size:10.5px
+}
+.flow-summary .node{color:var(--ink-2);font-weight:600}
+.flow-summary .arrow{color:#b7b3ad}
+
+
+/* ---------- Home refinement ---------- */
+.home-main{
+  max-width:860px;
+  padding:38px 0 18px;
+}
+.how-it-works{
+  margin-top:34px;
+  padding:26px 0 4px;
+  border-top:1px solid var(--line);
+}
+.how-header{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:16px;
+}
+.how-header .eyebrow{margin-bottom:0}
+.how-header h3{
+  font-family:'Source Serif 4',Georgia,serif;
+  font-size:22px;
+  line-height:1.2;
+  font-weight:500;
+  color:var(--ink);
+}
+.how-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:6px;
+  overflow:hidden;
+}
+.how-step{
+  min-height:140px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  padding:18px 16px;
+  border-left:1px solid var(--line);
+}
+.how-step:first-child{border-left:0}
+.how-number{
+  flex:0 0 auto;
+  font-size:9px;
+  color:var(--accent);
+  font-weight:700;
+  letter-spacing:.07em;
+  margin-top:2px;
+}
+.how-step strong{
+  display:block;
+  color:var(--ink);
+  font-size:12px;
+  font-weight:650;
+  margin-bottom:5px;
+}
+.how-step p{
+  color:var(--muted);
+  font-size:10.7px;
+  line-height:1.55;
+}
+
+/* remove former project snapshot layout constraints */
+.home-shell{
+  display:block;
+}
+.home-aside{
+  display:none;
+}
+
+
+/* ---------- Home: How It Works replaces Project Snapshot ---------- */
+.home-shell{
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(315px,.72fr);
+  gap:48px;
+  align-items:start;
+}
+.home-aside{
+  display:block;
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:23px 24px;
+  box-shadow:none;
+}
+.how-aside .eyebrow{
+  margin-bottom:7px;
+}
+.how-aside h3{
+  font-family:'Source Serif 4',Georgia,serif;
+  font-size:20px;
+  line-height:1.2;
+  font-weight:500;
+  color:var(--ink);
+  margin-bottom:13px;
+}
+.how-aside-list{
+  display:grid;
+}
+.how-aside-step{
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr);
+  gap:9px;
+  padding:12px 0;
+  border-top:1px solid var(--line);
+}
+.how-aside-step:first-child{
+  border-top:0;
+  padding-top:4px;
+}
+.how-aside-number{
+  color:var(--accent);
+  font-size:9px;
+  line-height:1.5;
+  font-weight:700;
+  letter-spacing:.06em;
+}
+.how-aside-step strong{
+  display:block;
+  color:var(--ink);
+  font-size:11.5px;
+  line-height:1.35;
+  font-weight:650;
+  margin-bottom:3px;
+}
+.how-aside-step p{
+  color:var(--muted);
+  font-size:10.3px;
+  line-height:1.5;
+}
+
+/* old full-width How It Works section no longer used */
+.how-it-works{
+  display:none;
+}
+
+/* ---------- Workbench ---------- */
+.workbench-header{
+  display:flex;justify-content:space-between;gap:28px;align-items:flex-start;margin-bottom:25px
+}
+.workbench-header-copy{max-width:690px}
+.workbench-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.workbench-shell{
+  display:grid;grid-template-columns:minmax(0,1fr) 306px;gap:18px;align-items:start
+}
+.panel{
+  background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:22px
+}
+.panel-title{
+  display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:14px
+}
+.step-number{
+  width:23px;height:23px;border-radius:50%;background:var(--accent);color:#fff;
+  display:grid;place-items:center;font-size:9.5px;font-weight:700;flex:0 0 auto
+}
+.panel-copy{font-size:12.2px;color:var(--muted);line-height:1.65;margin-bottom:15px}
+.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.upload{
+  background:#fdfcfb;border:1.5px dashed var(--line-2);border-radius:6px;padding:17px;min-height:126px
+}
+.upload:hover{border-color:var(--accent);background:var(--accent-soft)}
+.upload label{display:block;font-size:11.5px;font-weight:650;color:var(--ink-2);margin-bottom:9px}
+.upload input{
+  width:100%;background:#fff;border:1px solid var(--line);border-radius:5px;padding:7px;color:var(--muted);font-size:10.8px
+}
+.upload input::file-selector-button{
+  border:0;border-radius:4px;background:var(--accent-soft);color:var(--accent);
+  font-weight:650;padding:7px 9px;margin-right:8px
+}
+.upload p{font-size:10.2px;color:var(--muted);margin-top:8px;overflow-wrap:anywhere}
+.criteria-stack{display:grid;gap:10px}
+.criteria-input{border-bottom:1px solid var(--line);padding-bottom:12px}
+.criteria-input:last-child{border-bottom:0;padding-bottom:0}
+.criteria-input label{display:block;font-size:10.4px;color:var(--muted);font-weight:650;margin-bottom:6px}
+.criteria-input input{
+  width:100%;height:37px;border:1px solid var(--line);border-radius:5px;background:#fff;color:var(--ink);
+  padding:8px 10px;font-size:12px;font-weight:600
+}
+.criteria-input p{font-size:9.6px;color:var(--muted-2);line-height:1.45;margin-top:5px}
+.run-bar{
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:14px;align-items:center
+}
+.run-note{font-size:10.3px;color:var(--muted)}
+.schema-toggle{margin-top:14px}
+details.schema-details{border-top:1px solid var(--line);padding-top:12px}
+details.schema-details summary{cursor:pointer;font-size:10.8px;font-weight:650;color:var(--ink-2)}
+.schema{
+  font-size:10.3px;line-height:1.7;background:#faf9f7;border:1px solid var(--line);
+  border-radius:5px;padding:11px;margin-top:10px;color:var(--muted)
+}
+.error,.info{border-radius:5px;padding:11px 12px;margin-top:14px;font-size:11.3px}
+.info{scroll-margin-top:96px}
+.error{background:var(--red-bg);border:1px solid #f3c9cc;color:var(--red)}
+.info{background:var(--blue-bg);border:1px solid #d8deea;color:var(--ink-2)}
+
+
+/* ---------- Executive Summary ---------- */
+.executive-summary{
+  margin-top:18px;
+}
+.summary-kicker{
+  font-size:9.5px;color:var(--muted-2);font-weight:700;text-transform:uppercase;
+  letter-spacing:.09em;margin-bottom:10px
+}
+.assessment-hero{
+  display:grid;
+  grid-template-columns:minmax(0,1.55fr) minmax(360px,.9fr);
+  border:1px solid #efc7cb;
+  border-left:5px solid var(--red);
+  border-radius:6px;
+  overflow:hidden;
+  background:linear-gradient(135deg,#fff 0%,#fff8f7 100%);
+  box-shadow:0 8px 22px rgba(180,35,24,.055);
+}
+.assessment-hero-copy{
+  padding:24px 26px;
+}
+.assessment-hero-label{
+  font-size:9.5px;
+  color:var(--red);
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.095em;
+  margin-bottom:8px;
+}
+.assessment-hero-status{
+  font-family:'Source Serif 4',Georgia,serif;
+  font-size:30px;
+  line-height:1.1;
+  font-weight:600;
+  color:var(--ink);
+  margin-bottom:9px;
+}
+.assessment-hero-detail{
+  max-width:700px;
+  font-size:12.3px;
+  line-height:1.65;
+  color:var(--ink-2);
+}
+.assessment-hero-stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  border-left:1px solid #efd8da;
+  background:rgba(255,255,255,.68);
+}
+.assessment-hero-stat{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:20px 17px;
+  border-left:1px solid var(--line);
+}
+.assessment-hero-stat:first-child{border-left:0}
+.assessment-hero-stat strong{
+  display:block;
+  font-size:32px;
+  line-height:1;
+  color:var(--ink);
+  font-weight:750;
+  margin-bottom:8px;
+}
+.assessment-hero-stat span{
+  font-size:9.6px;
+  line-height:1.4;
+  color:var(--muted);
+  font-weight:650;
+  text-transform:uppercase;
+  letter-spacing:.045em;
+}
+.metric-summary-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  margin-top:12px;
+}
+.executive-card{
+  background:#fff;border:1px solid var(--line);border-left:4px solid transparent;
+  border-radius:5px;padding:16px 18px;min-height:118px
+}
+.executive-card.high-accent{border-left-color:var(--red)}
+.executive-card.medium-accent{border-left-color:var(--amber)}
+.executive-label{
+  font-size:9.2px;color:var(--muted-2);font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;margin-bottom:8px
+}
+.executive-value{
+  font-size:30px;line-height:1;font-weight:700;color:var(--ink);margin-bottom:8px
+}
+.executive-detail{font-size:10.4px;color:var(--muted);line-height:1.5}
+
+
+/* ---------- Compact executive metric grid ---------- */
+.metric-summary-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  margin-top:10px;
+  gap:8px;
+}
+.metric-summary-grid .executive-card{
+  min-height:74px;
+  padding:11px 13px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-areas:
+    "label value"
+    "detail value";
+  column-gap:12px;
+  align-items:center;
+}
+.metric-summary-grid .executive-label{
+  grid-area:label;
+  margin-bottom:2px;
+  font-size:8.7px;
+}
+.metric-summary-grid .executive-value{
+  grid-area:value;
+  margin:0;
+  font-size:25px;
+  align-self:center;
+}
+.metric-summary-grid .executive-detail{
+  grid-area:detail;
+  font-size:9.6px;
+  line-height:1.4;
+  max-width:210px;
+}
+
+/* ---------- Results ---------- */
+.results-shell{margin-top:28px}
+.result-overview{
+  display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(120px,.45fr));gap:0;
+  background:var(--paper);border:1px solid var(--line);border-radius:7px;overflow:hidden
+}
+.result-main{
+  padding:22px;border-left:4px solid var(--red);
+  background:linear-gradient(135deg,#fff 0%,var(--red-bg) 100%)
+}
+.result-main .label{
+  font-size:9.2px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px
+}
+.result-main h3{
+  font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:500;color:var(--ink);margin-bottom:7px
+}
+.result-main p{font-size:12.2px;color:var(--muted);line-height:1.65}
+.result-stat{padding:21px;border-left:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
+.result-stat span{font-size:9.2px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700}
+.result-stat strong{font-size:25px;color:var(--ink);line-height:1;margin-top:8px}
+.result-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:24px 0 12px}
+.result-toolbar h3{
+  font-family:'Source Serif 4',Georgia,serif;font-size:19px;font-weight:500;color:var(--ink)
+}
+.result-toolbar p{font-size:10.8px;color:var(--muted)}
+.results-grid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:18px;align-items:start}
+.result-side{display:grid;gap:14px}
+
+/* exception cards: borrowed from the reference design, fitted to v22 logic */
+.exception-list{display:grid;gap:10px}
+.exception-item{
+  background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--red);
+  border-radius:5px;padding:15px 16px
+}
+.exception-item.medium{border-left-color:var(--amber)}
+.exception-header{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px
+}
+.exception-title{font-size:12.5px;font-weight:650;color:var(--ink)}
+.exception-meta{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 12px;
+  padding:9px 0;margin-bottom:8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)
+}
+.exception-meta span{font-size:9.2px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.04em}
+.exception-meta strong{display:block;margin-top:2px;font-size:10.8px;color:var(--ink-2);font-weight:650;text-transform:none;letter-spacing:0}
+.exception-detail{font-size:11.3px;color:var(--muted);line-height:1.6}
+.exception-trace{margin-top:9px}
+.exception-empty{
+  background:var(--green-bg);border:1px solid #cbe9df;border-left:4px solid var(--green);
+  border-radius:5px;padding:16px;font-size:11.5px;color:var(--green)
+}
+
+/* supporting metric list */
+.metric-list{background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.metric{
+  border:0;border-bottom:1px solid var(--line);background:#fff;padding:12px 13px;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:11px;align-items:center;min-height:0
+}
+.metric:last-child{border-bottom:0}
+.metric h4{font-size:10.5px;color:var(--ink-2);font-weight:650}
+.metric .num{font-size:18px;color:var(--ink);font-weight:700;margin:0}
+.metric p{grid-column:1/-1;font-size:9.5px;color:var(--muted-2);line-height:1.45;margin-top:-4px}
+.metric.alert,.metric.warn,.metric.neutral,.metric.good{border-left:0}
+.secondary-panel{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px}
+.secondary-panel h3{
+  font-family:'Source Serif 4',Georgia,serif;font-size:16px;font-weight:500;color:var(--ink);margin-bottom:9px
+}
+.secondary-panel p{font-size:10.3px;color:var(--muted);line-height:1.55}
+.summary-block{background:#fff;border:1px solid var(--line);border-radius:6px;padding:18px}
+.summary-block .wp{border:0;background:transparent;padding:0;margin:0 0 17px}
+.summary-block .wp-head{padding-bottom:10px;margin-bottom:11px;border-bottom:1px solid var(--line)}
+.summary-block .field{margin-bottom:10px}
+.summary-block .label{font-size:8.8px;color:var(--muted);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px}
+.summary-block .value{font-size:11.2px;color:var(--ink-2);line-height:1.6}
+
+/* ---------- Tables ---------- */
+table{width:100%;border-collapse:collapse;font-size:10.8px;background:#fff}
+th,td{padding:10px 11px;text-align:left;vertical-align:top;border:1px solid var(--line)}
+th{
+  background:#faf9f7;color:var(--muted);font-size:9.2px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.045em
+}
+td{color:var(--muted);line-height:1.55}
+.table-shell{background:var(--paper);border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.table-shell table{margin:0;border:0}
+.table-shell th:first-child,.table-shell td:first-child{border-left:0}
+.table-shell th:last-child,.table-shell td:last-child{border-right:0}
+.table-shell tr:first-child th{border-top:0}
+.table-shell tbody tr:last-child td{border-bottom:0}
+.badge{
+  display:inline-flex;align-items:center;padding:4px 7px;border-radius:3px;
+  font-size:9px;font-weight:700;border:1px solid transparent;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em
+}
+.high{background:var(--red-bg);color:var(--red);border-color:#f1c9cc}
+.medium{background:var(--amber-bg);color:var(--amber);border-color:#f1d8b7}
+.low,.effective{background:var(--green-bg);color:var(--green);border-color:#cbe9df}
+.blue{background:var(--accent-soft);color:var(--accent);border-color:#d7ddea}
+
+/* ---------- Trace ---------- */
+.action-link{
+  display:inline-flex;margin:2px 4px 2px 0;padding:4px 7px;border-radius:4px;
+  background:#fff;border:1px solid var(--line-2);color:var(--accent);font-size:9.2px;font-weight:650
+}
+.action-link:hover{background:var(--accent-soft);border-color:var(--accent)}
+.link-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+.chip{
+  background:#faf9f7;border:1px solid var(--line);border-radius:3px;
+  padding:4px 7px;color:var(--muted);font-size:9.2px;font-weight:600
+}
+
+/* ---------- Case Study ---------- */
+.case-layout{display:grid;grid-template-columns:205px minmax(0,1fr);gap:34px;align-items:start}
+.case-nav{position:sticky;top:108px;padding-top:4px}
+.case-nav .case-nav-title{
+  font-size:9.2px;color:var(--muted-2);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:9px
+}
+.case-nav button{
+  width:100%;text-align:left;border:0;background:transparent;color:var(--muted);
+  font-size:10.8px;padding:7px 8px;border-radius:4px
+}
+.case-nav button:hover{background:#fff;color:var(--accent)}
+.case-document{
+  background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:40px 44px;
+  box-shadow:none
+}
+.case-document-header{padding-bottom:25px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.case-document-header .section-title{font-size:34px}
+.case-document-header .page-intro{font-size:12.8px}
+.case-section{
+  padding:29px 0;border-bottom:1px solid var(--line);background:transparent;margin:0
+}
+.case-section:last-child{border-bottom:0}
+.case-section h3{
+  font-family:'Source Serif 4',Georgia,serif;font-size:20px;font-weight:500;color:var(--ink);
+  letter-spacing:-.015em;margin-bottom:13px
+}
+.case-section h4{
+  font-family:'Inter',sans-serif;font-size:11.2px;color:var(--ink-2);
+  margin:18px 0 7px;font-weight:700
+}
+.case-section p,.case-section li{font-size:12.2px;color:var(--muted);line-height:1.72}
+.case-section ul{margin-left:18px}
+.case-section table{margin-top:12px}
+.flow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-top:13px}
+.step{
+  padding:10px 6px;border:1px solid var(--line);border-radius:4px;background:#faf9f7;
+  text-align:center;font-size:9.3px;color:var(--ink-2);font-weight:650
+}
+.wp{background:#fbfaf8;border:1px solid var(--line);border-radius:5px;padding:17px;margin-top:14px}
+.wp-head{
+  display:flex;justify-content:space-between;gap:12px;align-items:flex-start;
+  padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:12px
+}
+.wp-head strong{font-size:11.8px;color:var(--ink)}
+.ref{
+  padding:3px 6px;border-radius:3px;background:var(--accent-soft);color:var(--accent);
+  font-size:8.8px;font-weight:700
+}
+.field{margin-bottom:11px}
+.label{
+  font-size:8.6px;color:var(--muted-2);font-weight:700;text-transform:uppercase;
+  letter-spacing:.075em;margin-bottom:3px
+}
+.value{font-size:11.3px;color:var(--muted);line-height:1.62}
+.finding{
+  border:1px solid var(--line);border-left:4px solid var(--red);
+  border-radius:5px;background:#fff;padding:17px;margin-top:14px
+}
+.finding h4{
+  font-family:'Source Serif 4',Georgia,serif;color:var(--red);font-size:15px;font-weight:500;margin:0 0 12px
+}
+.meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:13px}
+.meta-item{background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px}
+.meta-item .k{
+  font-size:8.3px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:3px
+}
+.meta-item .v{font-size:10.6px;color:var(--muted);line-height:1.5}
+.evidence-box{background:#fff;border:1px solid var(--line);border-radius:4px;padding:12px;margin-top:10px}
+.evidence-box h5{font-family:'Source Serif 4',Georgia,serif;font-size:13px;font-weight:500;color:var(--ink);margin-bottom:8px}
+.evidence-box pre{
+  background:#faf9f7;border:1px solid var(--line);border-radius:4px;padding:10px;white-space:pre-wrap;
+  overflow-x:auto;font-size:9.3px;color:var(--muted);line-height:1.55
+}
+
+/* ---------- About ---------- */
+.about-layout{display:grid;grid-template-columns:235px minmax(0,1fr);gap:42px;align-items:start}
+.about-intro{position:sticky;top:110px}
+.about-intro p{font-size:12.2px;color:var(--muted);line-height:1.72;margin-top:12px}
+.about-content{background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:8px 36px;box-shadow:none}
+.about-section{padding:27px 0;border-bottom:1px solid var(--line)}
+.about-section:last-child{border-bottom:0}
+.about-section h3{
+  font-family:'Source Serif 4',Georgia,serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:10px
+}
+.about-section h4{font-size:10.8px;color:var(--ink-2);margin:16px 0 6px}
+.about-section p,.about-section li{font-size:11.8px;color:var(--muted);line-height:1.72}
+.about-section ul{margin-left:18px}
+
+/* ---------- Footer ---------- */
+footer{
+  border-top:1px solid var(--line);background:#fff;padding:27px 0;
+  color:var(--muted-2);font-size:10.2px;text-align:center
+}
+
+/* legacy inline colors */
+[style*="#182230"],[style*="#0f172a"],[style*="#c9d1d9"]{color:var(--ink)!important}
+[style*="#667085"],[style*="#6e7681"]{color:var(--muted)!important}
+[style*="#b42318"],[style*="#f85149"]{color:var(--red)!important}
+[style*="#067647"],[style*="#3fb950"]{color:var(--green)!important}
+
+
+/* ---------- v28 overview fit + result action placement ---------- */
+@media(min-width:981px){
+  .overview-section{
+    padding:20px 0 24px;
+    min-height:calc(100vh - 112px);
+  }
+  .home-shell{
+    gap:34px;
+    align-items:center;
+  }
+  .home-main{
+    padding:18px 0 4px;
+  }
+  .hero-title{
+    font-size:clamp(38px,4.2vw,54px);
+    line-height:1.03;
+  }
+  .hero-sub{
+    margin-top:14px;
+    font-size:14px;
+    line-height:1.65;
+  }
+  .credential-line{
+    margin-top:14px;
+  }
+  .home-actions{
+    margin-top:18px;
+  }
+  .home-aside{
+    padding:18px 20px;
+  }
+  .how-aside h3{
+    margin-bottom:8px;
+  }
+  .how-aside-step{
+    padding:8px 0;
+  }
+  .how-aside-step p{
+    line-height:1.42;
+  }
+  .home-divider{
+    margin:20px 0 18px;
+  }
+  .capability{
+    padding:16px 20px 16px 0;
+  }
+  .capability+.capability{
+    padding-left:20px;
+  }
+  .capability .step-tag{
+    margin-bottom:5px;
+  }
+  .capability h4{
+    margin-bottom:4px;
+    font-size:16px;
+  }
+  .capability p{
+    font-size:11.3px;
+    line-height:1.5;
+  }
+  .flow-summary{
+    margin-top:15px;
+  }
+}
+
+.results-top-actions{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:8px;
+  margin:14px 0 8px;
+}
+.results-top-actions button{
+  min-height:37px;
+}
+.executive-summary{
+  margin-top:0;
+}
+
+/* ---------- Responsive ---------- */
+@media(max-width:980px){
+  .home-shell{grid-template-columns:1fr}
+  .home-aside{max-width:560px}
+
+  .how-grid{grid-template-columns:1fr 1fr}
+  .how-step:nth-child(3){border-left:0;border-top:1px solid var(--line)}
+  .how-step:nth-child(4){border-top:1px solid var(--line)}
+
+  .assessment-hero{grid-template-columns:1fr}
+  .assessment-hero-stats{border-left:0;border-top:1px solid #efd8da}
+  .metric-summary-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+
+
+  .home-shell{grid-template-columns:1fr}
+  .home-aside{max-width:520px}
+  .workbench-shell{grid-template-columns:1fr}
+  .results-grid{grid-template-columns:1fr}
+  .result-overview{grid-template-columns:1fr 1fr}
+  .result-main{grid-column:1/-1;border-bottom:1px solid var(--line)}
+  .result-stat:nth-of-type(2){border-left:0}
+  .case-layout,.about-layout{grid-template-columns:1fr}
+  .case-nav,.about-intro{position:static}
+  .case-nav{display:flex;gap:4px;overflow-x:auto;padding-bottom:8px}
+  .case-nav .case-nav-title{display:none}
+  .case-nav button{width:auto;white-space:nowrap;background:#fff;border:1px solid var(--line)}
+  .flow{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:760px){
+
+  .results-top-actions{justify-content:flex-start;flex-wrap:wrap}
+
+  .how-grid{grid-template-columns:1fr}
+  .how-step{border-left:0;border-top:1px solid var(--line);min-height:auto}
+  .how-step:first-child{border-top:0}
+  .metric-summary-grid{grid-template-columns:1fr}
+  .metric-summary-grid .executive-card{min-height:68px}
+
+  .assessment-hero-stats{grid-template-columns:1fr}
+  .assessment-hero-stat{border-left:0;border-top:1px solid var(--line)}
+  .assessment-hero-stat:first-child{border-top:0}
+  .metric-summary-grid{grid-template-columns:1fr}
+
+
+  .container{width:min(100% - 28px,1180px)}
+  header{position:relative}
+  header>.container{align-items:flex-start;flex-direction:column;padding:14px 0;gap:10px}
+  nav{width:100%;overflow-x:auto;flex-wrap:nowrap}
+  nav button{white-space:nowrap}
+  .section{padding:38px 0 62px}
+  .home-main{padding-top:10px}
+  .hero-title{font-size:42px}
+  .home-capabilities{grid-template-columns:1fr}
+  .capability,.capability+.capability{padding:18px 0;border-left:0;border-top:1px solid var(--line)}
+  .capability:first-child{border-top:0}
+  .workbench-header{flex-direction:column}
+  .workbench-actions{justify-content:flex-start}
+  .upload-grid{grid-template-columns:1fr}
+  .result-overview{grid-template-columns:1fr}
+  .result-main{grid-column:auto}
+  .result-stat{border-left:0;border-top:1px solid var(--line)}
+  .exception-meta{grid-template-columns:1fr 1fr}
+  .case-document{padding:28px 22px}
+  .about-content{padding:6px 22px}
+  .grid.two,.grid.three{grid-template-columns:1fr}
+  .meta-grid{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr 1fr}
+  .table-shell{display:block;overflow-x:auto}
+  table{min-width:680px}
+}
+@media(max-width:460px){
+  .hero-title{font-size:36px}
+  .buttons button,.workbench-actions button{width:100%}
+  .flow{grid-template-columns:1fr}
+  .exception-meta{grid-template-columns:1fr}
+}
+
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const normalizeHeader = (h) =>
+      String(h || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+
+    const parseCSV = (text) => {
+      const rows = [];
+      let row = [], field = "", inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
+
+        if (ch === '"' && inQuotes && next === '"') {
+          field += '"'; i++;
+        } else if (ch === '"') {
+          inQuotes = !inQuotes;
+        } else if (ch === "," && !inQuotes) {
+          row.push(field); field = "";
+        } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
+          if (ch === "\r" && next === "\n") i++;
+          row.push(field);
+          if (row.some(v => String(v).trim() !== "")) rows.push(row);
+          row = []; field = "";
+        } else {
+          field += ch;
+        }
+      }
+      if (inQuotes) {
+        throw new Error("Malformed CSV: an opened quoted field was not closed.");
+      }
+
+      row.push(field);
+      if (row.some(v => String(v).trim() !== "")) rows.push(row);
+      if (!rows.length) return [];
+
+      const headers = rows[0].map(normalizeHeader);
+      return rows.slice(1).map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => obj[h] = String(r[idx] ?? "").trim());
+        return obj;
+      });
+    };
+
+    const first = (obj, aliases) => {
+      for (const a of aliases) {
+        const key = normalizeHeader(a);
+        if (obj[key] !== undefined && String(obj[key]).trim() !== "") return obj[key];
+      }
+      return "";
+    };
+
+    const boolValue = (v) => {
+      const s = String(v || "").trim().toLowerCase();
+      if (["true","yes","y","1","active","enabled"].includes(s)) return true;
+      if (["false","no","n","0","inactive","disabled"].includes(s)) return false;
+      return null;
+    };
+
+    const approvalValue = (v) => {
+      const s = String(v || "").trim().toLowerCase();
+      if (["approved","approve","yes","true","1"].includes(s)) return true;
+      if (["not approved","rejected","denied","pending","no","false","0"].includes(s)) return false;
+      return null;
+    };
+
+    const dateValue = (v) => {
+      if (!v) return null;
+      const d = new Date(v);
+      return Number.isNaN(d.getTime()) ? null : d;
+    };
+
+    const elapsedDays = (later, earlier) => (later - earlier) / 86400000;
+    const dayDiff = (later, earlier) => Math.floor(elapsedDays(later, earlier));
+
+    const downloadText = (filename, text) => {
+      const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    };
+
+
+    const frameworkMappings = {
+      "AC-03": {
+        sox: "Logical Access - termination / deprovisioning",
+        soc2: "CC6.2 - user authorization and access removal",
+        nist: "PR.AA-05 - access permissions, entitlements, and authorizations",
+        iso: "A.5.15 / A.5.16 / A.5.18 - access control, identity management, access rights"
+      },
+      "AC-05": {
+        sox: "Logical Access - privileged-access authorization",
+        soc2: "CC6.2 / CC6.3 - authorization, role-based access, privilege changes",
+        nist: "PR.AA-05 - access permissions, least privilege, and review",
+        iso: "A.5.18 / A.8.2 - access rights and privileged access rights"
+      },
+      "AC-07": {
+        sox: "Logical Access - periodic user-access review",
+        soc2: "CC6.2 / CC6.3 - periodic access review and role appropriateness",
+        nist: "PR.AA-05 - access permissions are managed and reviewed",
+        iso: "A.5.15 / A.5.18 - access control and access-rights review"
+      },
+      "DATA_QUALITY": {
+        sox: "Evidence / IPE reliability prerequisite",
+        soc2: "Supporting evidence quality - no direct criterion asserted",
+        nist: "Evidence-quality prerequisite - no direct subcategory asserted",
+        iso: "Evidence-quality prerequisite - no direct Annex A control asserted"
+      }
+    };
+
+    const frameworkForControl = (control) => {
+      const value = String(control || "");
+      if (value.includes("AC-03")) return frameworkMappings["AC-03"];
+      if (value.includes("AC-05")) return frameworkMappings["AC-05"];
+      if (value.includes("AC-07")) return frameworkMappings["AC-07"];
+      return frameworkMappings["DATA_QUALITY"];
+    };
+
+    const sanitizeFilenamePart = (name) => {
+      const cleaned = String(name || "")
+        .replace(/\.csv$/i, "")
+        .normalize("NFKC")
+        .replace(/[^\p{L}\p{N}._-]+/gu, "_")
+        .replace(/^_+|_+$/g, "");
+      return cleaned || "file";
+    };
+
+    const csvCell = (value) => {
+      const s = String(value ?? "");
+      return `"${s.replace(/"/g, '""')}"`;
+    };
+
+    function ControlProof() {
+      const [tab, setTab] = React.useState("home");
+      const [employeeFile, setEmployeeFile] = React.useState(null);
+      const [accessFile, setAccessFile] = React.useState(null);
+      const [results, setResults] = React.useState(null);
+      const [issues, setIssues] = React.useState([]);
+      const [error, setError] = React.useState("");
+      const [sourceLabel, setSourceLabel] = React.useState("");
+      const [openEvidence, setOpenEvidence] = React.useState(null);
+      const employeeInputRef = React.useRef(null);
+      const accessInputRef = React.useRef(null);
+      const analysisSourceRef = React.useRef(null);
+      const [pendingAnchor, setPendingAnchor] = React.useState(null);
+      const [criteria, setCriteria] = React.useState({
+        deprovisionHours: 24,
+        dormantDays: 90,
+        recentDays: 30
+      });
+
+      const resetAnalysisState = () => {
+        setResults(null);
+        setIssues([]);
+        setSourceLabel("");
+        setError("");
+        setOpenEvidence(null);
+      };
+
+      const updateCriterion = (key, value) => {
+        const parsed = Number(value);
+        const safeValue = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+        setCriteria(prev => ({ ...prev, [key]: safeValue }));
+        resetAnalysisState();
+      };
+
+      const handleEmployeeFileChange = (e) => {
+        setEmployeeFile(e.target.files?.[0] || null);
+        resetAnalysisState();
+      };
+
+      const handleAccessFileChange = (e) => {
+        setAccessFile(e.target.files?.[0] || null);
+        resetAnalysisState();
+      };
+
+      React.useEffect(() => {
+        if (tab !== "case" || !pendingAnchor) return;
+        const el = document.getElementById(pendingAnchor);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          setPendingAnchor(null);
+        }
+      }, [tab, pendingAnchor]);
+
+      React.useEffect(() => {
+        if (tab !== "tool" || !results || !analysisSourceRef.current) return;
+        requestAnimationFrame(() => {
+          const headerOffset = 96;
+          const top =
+            analysisSourceRef.current.getBoundingClientRect().top +
+            window.scrollY -
+            headerOffset;
+          window.scrollTo({ top, behavior: "smooth" });
+        });
+      }, [results, tab]);
+
+const evidenceFiles = {
+        "HR_Terminations.csv": `employee_id,name,termination_time,department
+EMP-014,Jordan Lee,2025-04-02T17:00:00,Engineering
+EMP-029,Daniel Kim,2025-04-11T17:00:00,Marketing
+EMP-041,Mina Park,2025-05-02T17:00:00,Finance
+EMP-088,Alex Chen,2025-06-01T17:00:00,Operations
+EMP-142,Sam Rivera,2025-06-18T17:00:00,Product`,
+        "System_Access_Extract.csv": `employee_id,system,account_id,deactivation_time,last_activity
+EMP-014,GitHub,jordan.lee,2025-04-02T19:00:00,2025-04-02T15:12:00
+EMP-029,Google Workspace,daniel.kim,2025-04-14T17:00:00,2025-04-11T16:32:00
+EMP-041,AWS,mina.park,2025-05-02T21:00:00,2025-05-02T14:20:00
+EMP-088,AWS,alex.chen,2025-06-05T17:00:00,2025-06-01T13:44:00
+EMP-142,GitHub,sam.rivera,,2025-06-18T14:02:00`,
+        "Privileged_Access_Requests.csv": `request_id,employee_id,role,approval_time,provisioning_time,result
+REQ-003,EMP-203,Database Admin,2025-02-14T12:00:00,2025-02-12T09:00:00,Exception
+REQ-008,EMP-244,AWS Admin,,2025-04-03T10:15:00,Exception
+REQ-011,EMP-251,GitHub Owner,2025-05-20T08:30:00,2025-05-20T10:05:00,Pass`,
+        "Quarterly_Access_Review.csv": `system,quarter,reviewer,review_date,items_identified,items_remediated_within_10_days,result
+GitHub,Q1,System Owner,2025-03-28,2,2,Pass
+Google Workspace,Q1,System Owner,2025-03-29,1,1,Pass
+AWS,Q1,System Owner,2025-03-31,3,3,Pass
+GitHub,Q2,System Owner,2025-06-27,1,1,Pass
+Google Workspace,Q2,System Owner,2025-06-28,2,2,Pass
+AWS,Q2,System Owner,2025-06-30,2,2,Pass`
+      };
+
+      const scrollToAuditAnchor = (anchorId) => {
+        setPendingAnchor(anchorId);
+        setTab("case");
+      };
+
+      const evidenceViewer = (filename) => (
+        <div className="evidence-box">
+          <h5>{filename}</h5>
+          <pre>{evidenceFiles[filename]}</pre>
+          <div className="buttons">
+            <button className="secondary" onClick={() => downloadText(filename, evidenceFiles[filename])}>Download CSV</button>
+            <button className="secondary" onClick={() => setOpenEvidence(null)}>Close</button>
+          </div>
+        </div>
+      );
+
+      const analyzeRows = (employees, access, label) => {
+        const appliedCriteria = {
+          deprovisionHours: Number(criteria.deprovisionHours) > 0 ? Number(criteria.deprovisionHours) : 24,
+          dormantDays: Number(criteria.dormantDays) > 0 ? Number(criteria.dormantDays) : 90,
+          recentDays: Number(criteria.recentDays) > 0 ? Number(criteria.recentDays) : 30
+        };
+
+        if (!employees.length || !access.length) {
+          setError("Both CSV files must contain at least one data row.");
+          return;
+        }
+
+        const aliases = {
+          employeeId: ["employee_id","employeeid","emp_id","id"],
+          employeeStatus: ["status","employment_status"],
+          terminationDate: ["termination_time","termination_date","terminated_time","terminated_date","end_time","end_date"],
+          active: ["active","enabled","account_status","status"],
+          lastActive: ["last_active","last_login","last_activity"],
+          privileged: ["privileged","admin","is_admin","elevated"],
+          role: ["role","access_role","permission"],
+          expectedRole: ["expected_role","expected_access_role"],
+          approvalStatus: ["approval_status","approved"],
+          approvalDate: ["approval_time","approval_date","approved_at"],
+          provisionedDate: ["provisioned_time","provisioning_time","provisioned_date","granted_time","granted_date","created_at"],
+          deactivationDate: ["deactivation_time","deactivation_date","disabled_time","disabled_date","deactivated_at","disabled_at"],
+          modifiedDate: ["modified_date","updated_at","last_modified"]
+        };
+
+        const employeeColumns = new Set(Object.keys(employees[0] || {}));
+        const accessColumns = new Set(Object.keys(access[0] || {}));
+        const employeeHasAny = (names) => names.some(n => employeeColumns.has(normalizeHeader(n)));
+        const accessHasAny = (names) => names.some(n => accessColumns.has(normalizeHeader(n)));
+
+        if (!employeeHasAny(aliases.employeeId)) {
+          setError("Employee roster must contain an employee_id column (aliases such as emp_id are also accepted).");
+          return;
+        }
+        if (!accessHasAny(aliases.employeeId)) {
+          setError("System access export must contain an employee_id column so accounts can be reconciled to the employee roster.");
+          return;
+        }
+
+        const coverage = {
+          terminated: employeeHasAny(aliases.employeeStatus) && accessHasAny(aliases.active),
+          orphaned: accessHasAny(aliases.active),
+          lateDeprovision:
+            employeeHasAny(aliases.employeeStatus) &&
+            employeeHasAny(aliases.terminationDate) &&
+            accessHasAny(aliases.deactivationDate),
+          dormant: accessHasAny(aliases.active) && accessHasAny(aliases.lastActive),
+          privileged:
+            (accessHasAny(aliases.privileged) || accessHasAny(aliases.role)) &&
+            accessHasAny(aliases.provisionedDate) &&
+            accessHasAny(aliases.approvalDate),
+          roleMismatch: accessHasAny(aliases.role) && accessHasAny(aliases.expectedRole),
+          changes: accessHasAny(aliases.modifiedDate)
+        };
+
+        const employeeMap = new Map();
+        const duplicateEmployeeIds = new Set();
+
+        employees.forEach(emp => {
+          const id = first(emp, aliases.employeeId);
+          if (!id) return;
+          const normalizedId = String(id).trim().toLowerCase();
+          if (employeeMap.has(normalizedId)) {
+            duplicateEmployeeIds.add(String(id).trim());
+          } else {
+            employeeMap.set(normalizedId, emp);
+          }
+        });
+
+        if (duplicateEmployeeIds.size > 0) {
+          setResults(null);
+          setIssues([]);
+          setSourceLabel("");
+          setError(
+            `Employee roster contains duplicate employee_id value(s): ${Array.from(duplicateEmployeeIds).join(", ")}. ` +
+            "Resolve duplicates before analysis so the authoritative roster is unambiguous."
+          );
+          return;
+        }
+
+        const detectedIssues = [];
+        const terminatedEmployees = new Set();
+        let orphaned = 0;
+        let privileged = 0;
+        let dormant = 0;
+        let roleMismatch = 0;
+        let changes = 0;
+        let lateDeprovision = 0;
+        const now = new Date();
+
+        const addDataQualityIssue = ({ employee, account, system, detail, control, severity = "Medium" }) => {
+          detectedIssues.push({
+            type: "Insufficient evidence / data quality",
+            severity,
+            employee: employee || "Unmatched",
+            account,
+            system,
+            detail,
+            control
+          });
+        };
+
+        access.forEach((acct, idx) => {
+          const empId = first(acct, aliases.employeeId);
+          const accountId = first(acct, ["account_id","account","username","user","email"]) || `Row ${idx + 2}`;
+          const system = first(acct, ["system","application","app"]) || "Unknown system";
+          const role = first(acct, aliases.role);
+          const expectedRole = first(acct, aliases.expectedRole);
+          const active = accessHasAny(aliases.active) ? boolValue(first(acct, aliases.active)) : null;
+          const lastActive = accessHasAny(aliases.lastActive) ? dateValue(first(acct, aliases.lastActive)) : null;
+          const modified = accessHasAny(aliases.modifiedDate) ? dateValue(first(acct, aliases.modifiedDate)) : null;
+          const deactivationDate = accessHasAny(aliases.deactivationDate) ? dateValue(first(acct, aliases.deactivationDate)) : null;
+
+          const privilegedRaw = first(acct, aliases.privileged);
+          const isPrivileged =
+            (accessHasAny(aliases.privileged) || accessHasAny(aliases.role))
+              ? (boolValue(privilegedRaw) === true || /admin|owner|root|superuser/i.test(role || ""))
+              : null;
+
+          const approvalRaw = first(acct, aliases.approvalStatus);
+          const approvalStatus = accessHasAny(aliases.approvalStatus) ? approvalValue(approvalRaw) : null;
+          const approvalDate = accessHasAny(aliases.approvalDate) ? dateValue(first(acct, aliases.approvalDate)) : null;
+          const provisionedDate = accessHasAny(aliases.provisionedDate) ? dateValue(first(acct, aliases.provisionedDate)) : null;
+
+          const emp = employeeMap.get(String(empId || "").toLowerCase());
+          const empStatus = emp && employeeHasAny(aliases.employeeStatus) ? first(emp, aliases.employeeStatus) : "";
+          const terminationDate = emp && employeeHasAny(aliases.terminationDate) ? dateValue(first(emp, aliases.terminationDate)) : null;
+          const terminatedStatus = employeeHasAny(aliases.employeeStatus)
+            ? /terminated|inactive|former|left|separated/i.test(empStatus)
+            : false;
+
+          // Row-level evidence quality: do not silently treat missing/invalid values as a pass.
+          if (accessHasAny(aliases.active) && active === null) {
+            addDataQualityIssue({
+              employee: empId || "No employee ID",
+              account: accountId,
+              system,
+              detail: "Account active-status value is missing or invalid, so status-dependent access tests cannot be evaluated for this record.",
+              control: "Input data quality"
+            });
+          }
+
+          if (coverage.dormant && active === true && !lastActive) {
+            addDataQualityIssue({
+              employee: empId || "Unmatched",
+              account: accountId,
+              system,
+              detail: "last_active is missing or invalid for an active account, so dormancy cannot be evaluated for this record.",
+              control: "AC-07"
+            });
+          }
+
+          if (emp && terminatedStatus && employeeHasAny(aliases.terminationDate) && !terminationDate) {
+            addDataQualityIssue({
+              employee: empId,
+              account: accountId,
+              system,
+              detail: "Termination timestamp is missing or invalid for an employee marked terminated, so AC-03 timing cannot be evaluated.",
+              control: "AC-03",
+              severity: "High"
+            });
+          }
+
+          if (
+            coverage.lateDeprovision &&
+            emp &&
+            terminatedStatus &&
+            terminationDate &&
+            active === false &&
+            !deactivationDate
+          ) {
+            addDataQualityIssue({
+              employee: empId,
+              account: accountId,
+              system,
+              detail: `Account is inactive but the deactivation timestamp is missing or invalid, so ${appliedCriteria.deprovisionHours}-hour deprovisioning timeliness cannot be evaluated.`,
+              control: "AC-03",
+              severity: "High"
+            });
+          }
+
+          if (coverage.roleMismatch && role && !expectedRole) {
+            addDataQualityIssue({
+              employee: empId || "Unmatched",
+              account: accountId,
+              system,
+              detail: "expected_role is missing for this access record, so role appropriateness cannot be evaluated.",
+              control: "AC-07"
+            });
+          }
+
+          if (
+            accessHasAny(aliases.privileged) &&
+            String(privilegedRaw || "").trim() !== "" &&
+            boolValue(privilegedRaw) === null
+          ) {
+            addDataQualityIssue({
+              employee: empId || "Unmatched",
+              account: accountId,
+              system,
+              detail: "Privileged-access indicator is invalid, so privileged-access scope cannot be determined reliably for this record.",
+              control: "AC-05"
+            });
+          }
+
+          // Unmatched account: only evaluate when active-status data exists.
+          if (coverage.orphaned && active === true && (!empId || !emp)) {
+            orphaned++;
+            detectedIssues.push({
+              type: "Unmatched active account",
+              severity: "High",
+              employee: empId || "No employee ID",
+              account: accountId,
+              system,
+              detail: "Active account cannot be matched to the employee roster. It may represent a service, contractor, shared, or unauthorized account and requires review.",
+              control: "AC-07 / account reconciliation"
+            });
+          }
+
+          // Terminated employee still has an active account.
+          // If a termination timestamp column is available, the effective time must have occurred.
+          const terminationIsEffective =
+            !employeeHasAny(aliases.terminationDate) ||
+            (terminationDate && terminationDate.getTime() <= now.getTime());
+
+          if (coverage.terminated && emp && terminatedStatus && terminationIsEffective && active === true) {
+            terminatedEmployees.add(String(empId).toLowerCase());
+            detectedIssues.push({
+              type: "Terminated user with access",
+              severity: "High",
+              employee: empId,
+              account: accountId,
+              system,
+              detail: terminationDate
+                ? `Account remains active after effective termination date ${terminationDate.toISOString().slice(0,10)}.`
+                : "Account remains active for an employee marked terminated.",
+              control: "AC-03"
+            });
+          }
+
+          // Deprovisioning timeliness: distinguish a late closure from an account still active.
+          if (coverage.lateDeprovision && emp && terminatedStatus && terminationDate && deactivationDate) {
+            const hours = (deactivationDate.getTime() - terminationDate.getTime()) / 3600000;
+            if (hours > appliedCriteria.deprovisionHours) {
+              lateDeprovision++;
+              detectedIssues.push({
+                type: "Late deprovisioning",
+                severity: "High",
+                employee: empId,
+                account: accountId,
+                system,
+                detail: `Access was disabled ${hours.toFixed(1)} hours after the effective termination time (review threshold: ${appliedCriteria.deprovisionHours} hours).`,
+                control: "AC-03"
+              });
+            }
+          }
+
+          if (coverage.dormant && active === true && lastActive && elapsedDays(now, lastActive) > appliedCriteria.dormantDays) {
+            dormant++;
+            detectedIssues.push({
+              type: "Dormant active account",
+              severity: isPrivileged === true ? "High" : "Medium",
+              employee: empId || "Unmatched",
+              account: accountId,
+              system,
+              detail: `No recorded activity for ${dayDiff(now, lastActive)} days.`,
+              control: "AC-07"
+            });
+          }
+
+          if (coverage.privileged && isPrivileged === true) {
+            const approvalStatusPresent = String(approvalRaw || "").trim() !== "";
+            const approvalStatusBad = approvalStatusPresent && approvalStatus !== true;
+            const approvalDateMissing = !approvalDate;
+            const provisionedDateMissing = !provisionedDate;
+            const approvalAfterProvision = approvalDate && provisionedDate && approvalDate > provisionedDate;
+
+            if (approvalStatusBad || approvalDateMissing || provisionedDateMissing || approvalAfterProvision) {
+              privileged++;
+              let reason = "Privileged access does not have complete pre-provisioning approval evidence.";
+
+              if (approvalDateMissing && provisionedDateMissing) {
+                reason = "Approval and provisioning timestamps are missing or invalid, so pre-provisioning approval cannot be evaluated.";
+              } else if (approvalDateMissing) {
+                reason = "Approval timestamp is missing or invalid, so pre-provisioning approval cannot be demonstrated.";
+              } else if (provisionedDateMissing) {
+                reason = "Provisioning timestamp is missing or invalid, so pre-provisioning approval cannot be evaluated.";
+              } else if (approvalAfterProvision) {
+                reason = "Approval timestamp is later than the provisioning timestamp.";
+              } else if (approvalStatusBad) {
+                reason = `Approval status "${approvalRaw}" is not an approved value.`;
+              }
+
+              detectedIssues.push({
+                type: "Privileged access anomaly",
+                severity: "High",
+                employee: empId || "Unmatched",
+                account: accountId,
+                system,
+                detail: reason,
+                control: "AC-05"
+              });
+            }
+          }
+
+          if (coverage.roleMismatch && expectedRole && role && expectedRole.toLowerCase() !== role.toLowerCase()) {
+            roleMismatch++;
+            detectedIssues.push({
+              type: "Role mismatch",
+              severity: isPrivileged === true ? "High" : "Medium",
+              employee: empId || "Unmatched",
+              account: accountId,
+              system,
+              detail: `Assigned role "${role}" differs from expected role "${expectedRole}".`,
+              control: "AC-07"
+            });
+          }
+
+          if (
+            coverage.changes &&
+            modified &&
+            elapsedDays(now, modified) >= 0 &&
+            elapsedDays(now, modified) <= appliedCriteria.recentDays
+          ) {
+            changes++;
+          }
+        });
+
+        setError("");
+        setSourceLabel(label);
+        setResults({
+          terminated: coverage.terminated ? terminatedEmployees.size : null,
+          lateDeprovision: coverage.lateDeprovision ? lateDeprovision : null,
+          orphaned: coverage.orphaned ? orphaned : null,
+          privileged: coverage.privileged ? privileged : null,
+          dormant: coverage.dormant ? dormant : null,
+          roleMismatch: coverage.roleMismatch ? roleMismatch : null,
+          changes: coverage.changes ? changes : null,
+          coverage,
+          criteria: appliedCriteria,
+          employees: employees.length,
+          accounts: access.length
+        });
+        setIssues(detectedIssues);
+      };
+
+      const analyzeFiles = async () => {
+        if (!employeeFile || !accessFile) {
+          resetAnalysisState();
+          setError("Select both an employee roster CSV and a system access CSV before analyzing.");
+          return;
+        }
+
+        resetAnalysisState();
+
+        try {
+          const [empText, accessText] = await Promise.all([employeeFile.text(), accessFile.text()]);
+          const employees = parseCSV(empText);
+          const access = parseCSV(accessText);
+          analyzeRows(employees, access, `${employeeFile.name} + ${accessFile.name}`);
+        } catch (e) {
+          const reason = e && e.message ? ` ${e.message}` : "";
+          setError(`The CSV files could not be parsed.${reason} Confirm that they are valid comma-separated files.`);
+        }
+      };
+
+      const clear = () => {
+        setEmployeeFile(null);
+        setAccessFile(null);
+        resetAnalysisState();
+        if (employeeInputRef.current) employeeInputRef.current.value = "";
+        if (accessInputRef.current) accessInputRef.current.value = "";
+      };
+
+      const metricValue = (value) => value === null ? "N/A" : value;
+      const metricText = (value, availableText, unavailableText) =>
+        value === null ? unavailableText : availableText;
+
+
+
+
+
+      const getAnalysisSummary = () => {
+        if (!results) return null;
+
+        const dataQualityIssues = issues.filter(
+          x => x.type === "Insufficient evidence / data quality"
+        );
+        const confirmedIssues = issues.filter(
+          x => x.type !== "Insufficient evidence / data quality"
+        );
+
+        const affectedAccountKeys = new Set(
+          confirmedIssues.map(issue => {
+            const employee = String(issue.employee || "").trim();
+            const account = String(issue.account || "").trim();
+            const system = String(issue.system || "").trim();
+            return `${employee}|${account}|${system}`;
+          })
+        );
+        const affectedAccounts = affectedAccountKeys.size;
+
+        const countForControl = (controlId, list = confirmedIssues) =>
+          list.filter(x => String(x.control || "").includes(controlId)).length;
+
+        const ac03Confirmed = countForControl("AC-03");
+        const ac03DQ = countForControl("AC-03", dataQualityIssues);
+
+        const ac05Confirmed = countForControl("AC-05");
+        const ac05DQ = countForControl("AC-05", dataQualityIssues);
+
+        const ac07Confirmed = countForControl("AC-07");
+        const ac07DQ = countForControl("AC-07", dataQualityIssues);
+
+        const ac03CoverageTests = [
+          results.coverage.terminated,
+          results.coverage.lateDeprovision
+        ];
+        const ac03Available = ac03CoverageTests.filter(Boolean).length;
+        const ac05Coverage = results.coverage.privileged;
+
+        const ac07CoverageTests = [
+          results.coverage.orphaned,
+          results.coverage.dormant,
+          results.coverage.roleMismatch
+        ];
+        const ac07Available = ac07CoverageTests.filter(Boolean).length;
+
+        const totalRuleGroups =
+          ac03CoverageTests.length + 1 + ac07CoverageTests.length;
+        const availableRuleGroups =
+          ac03Available + (ac05Coverage ? 1 : 0) + ac07Available;
+        const fullCoverage = availableRuleGroups === totalRuleGroups;
+
+        const controlStatus = ({ available, full = true, confirmed, dq }) => {
+          if (!available) return "Not evaluated";
+          if (confirmed > 0 && dq > 0) return "Exceptions + evidence gaps";
+          if (confirmed > 0) return "Exceptions identified";
+          if (dq > 0) return "Insufficient evidence";
+          if (!full) return "Partially evaluated - no exceptions detected";
+          return "No exceptions detected";
+        };
+
+        const ac03Status = controlStatus({
+          available: ac03Available > 0,
+          full: ac03Available === ac03CoverageTests.length,
+          confirmed: ac03Confirmed,
+          dq: ac03DQ
+        });
+
+        const ac05Status = controlStatus({
+          available: ac05Coverage,
+          full: ac05Coverage,
+          confirmed: ac05Confirmed,
+          dq: ac05DQ
+        });
+
+        const ac07Status = controlStatus({
+          available: ac07Available > 0,
+          full: ac07Available === ac07CoverageTests.length,
+          confirmed: ac07Confirmed,
+          dq: ac07DQ
+        });
+
+        let overallStatus;
+        let overallDetail;
+        const coverageNote =
+          fullCoverage
+            ? ""
+            : ` Only ${availableRuleGroups} of ${totalRuleGroups} automated rule groups were evaluable from the available columns.`;
+
+        if (confirmedIssues.length > 0) {
+          overallStatus = "Review required";
+          overallDetail =
+            `${confirmedIssues.length} confirmed exception instance(s) across ${affectedAccounts} affected account(s) were identified. ` +
+            (dataQualityIssues.length > 0
+              ? `${dataQualityIssues.length} additional record(s) contain insufficient or invalid evidence and require follow-up.`
+              : "No additional evidence-quality issues were identified.") +
+            coverageNote;
+        } else if (dataQualityIssues.length > 0) {
+          overallStatus = "Evidence gaps require review";
+          overallDetail =
+            `No confirmed control exception rows were identified, but ${dataQualityIssues.length} record(s) could not be fully evaluated because required evidence was missing or invalid.` +
+            coverageNote;
+        } else if (availableRuleGroups === 0) {
+          overallStatus = "Not evaluated";
+          overallDetail =
+            "The uploaded files contain the core employee_id fields, but the additional columns required for the automated access-control tests are not available. N/A metrics must not be interpreted as control passes.";
+        } else if (!fullCoverage) {
+          overallStatus = "Partial evaluation - no exceptions detected";
+          overallDetail =
+            `No confirmed exceptions or evidence-quality issues were identified in the ${availableRuleGroups} of ${totalRuleGroups} automated rule groups that could be evaluated. Unevaluated rule groups must not be interpreted as control passes.`;
+        } else {
+          overallStatus = "No exceptions detected";
+          overallDetail =
+            "No confirmed exceptions or evidence-quality issues were identified by the available automated tests.";
+        }
+
+        return {
+          confirmedIssues,
+          dataQualityIssues,
+          affectedAccounts,
+          overallStatus,
+          overallDetail,
+          controls: [
+            {
+              id: "AC-03",
+              name: "Termination Access Removal",
+              coverage:
+                ac03Available === 0
+                  ? "Not evaluated"
+                  : ac03Available === ac03CoverageTests.length
+                    ? "Evaluated"
+                    : `Partially evaluated (${ac03Available}/${ac03CoverageTests.length} rule groups)`,
+              status: ac03Status,
+              confirmed: ac03Confirmed,
+              dq: ac03DQ,
+              basis: `Terminated-user access and deprovisioning > ${results.criteria?.deprovisionHours || 24} hours`
+            },
+            {
+              id: "AC-05",
+              name: "Privileged Access Pre-Approval",
+              coverage: ac05Coverage ? "Evaluated" : "Not evaluated",
+              status: ac05Status,
+              confirmed: ac05Confirmed,
+              dq: ac05DQ,
+              basis: `Privileged-access approval and provisioning-timestamp tests`
+            },
+            {
+              id: "AC-07",
+              name: "Access Review / Reconciliation",
+              coverage:
+                ac07Available === 0
+                  ? "Not evaluated"
+                  : ac07Available === ac07CoverageTests.length
+                    ? "Evaluated"
+                    : `Partially evaluated (${ac07Available}/${ac07CoverageTests.length} rule groups)`,
+              status: ac07Status,
+              confirmed: ac07Confirmed,
+              dq: ac07DQ,
+              basis: `Unmatched-account, dormancy > ${results.criteria?.dormantDays || 90} days, and role-alignment tests`
+            }
+          ]
+        };
+      };
+
+
+      const downloadExceptionsCSV = () => {
+        if (!results) {
+          alert("Run an analysis before downloading exceptions.");
+          return;
+        }
+
+        const headers = [
+          "issue",
+          "severity",
+          "employee",
+          "account",
+          "system",
+          "detail",
+          "related_control",
+          "sox_itgc",
+          "soc_2_tsc",
+          "nist_csf_2_0",
+          "iso_27001_2022"
+        ];
+
+        const rows = issues.map(issue => {
+          const mapping = frameworkForControl(issue.control);
+          return [
+            issue.type,
+            issue.severity,
+            issue.employee,
+            issue.account,
+            issue.system,
+            issue.detail,
+            issue.control,
+            mapping.sox,
+            mapping.soc2,
+            mapping.nist,
+            mapping.iso
+          ];
+        });
+
+        const csv = [headers, ...rows]
+          .map(row => row.map(csvCell).join(","))
+          .join("\r\n");
+
+        const employeeBase = sanitizeFilenamePart(employeeFile?.name || "employee_roster");
+        const accessBase = sanitizeFilenamePart(accessFile?.name || "access_export");
+        downloadText(`${employeeBase}_${accessBase}_Exceptions.csv`, csv);
+      };
+
+      const downloadAnalysisReportPDF = () => {
+        if (!results) {
+          alert("Run an analysis before downloading the report.");
+          return;
+        }
+
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+          alert("PDF library could not be loaded. Confirm that you are online and try again.");
+          return;
+        }
+
+        const summary = getAnalysisSummary();
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: "pt", format: "letter" });
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 50;
+        const contentWidth = pageWidth - (margin * 2);
+        const footerY = pageHeight - 32;
+        let y = 54;
+
+        const addFooter = () => {
+          doc.setDrawColor(210);
+          doc.line(margin, footerY - 12, pageWidth - margin, footerY - 12);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8);
+          doc.setTextColor(105);
+          doc.text("ControlProof - Access Analysis Report", margin, footerY);
+          doc.text(`Page ${doc.getNumberOfPages()}`, pageWidth - margin, footerY, { align: "right" });
+        };
+
+        const ensureSpace = (needed = 44) => {
+          if (y + needed > footerY - 16) {
+            addFooter();
+            doc.addPage();
+            y = 48;
+          }
+        };
+
+        const addHeading = (text, size = 13) => {
+          ensureSpace(size + 20);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(size);
+          doc.setTextColor(25);
+          doc.text(text, margin, y);
+          y += size + 9;
+        };
+
+        const addBody = (text, opts = {}) => {
+          const size = opts.size || 9.5;
+          const indent = opts.indent || 0;
+          const gap = opts.gap ?? 7;
+          const width = contentWidth - indent;
+          doc.setFont("helvetica", opts.bold ? "bold" : "normal");
+          doc.setFontSize(size);
+          doc.setTextColor(opts.color || 65);
+          const lines = doc.splitTextToSize(String(text ?? ""), width);
+          const lineHeight = size * 1.35;
+          ensureSpace(lines.length * lineHeight + gap);
+          doc.text(lines, margin + indent, y);
+          y += lines.length * lineHeight + gap;
+        };
+
+        const addMetric = (label, value) => {
+          ensureSpace(18);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9.5);
+          doc.setTextColor(60);
+          doc.text(label, margin, y);
+          doc.setFont("helvetica", "normal");
+          doc.text(value === null ? "N/A" : String(value), pageWidth - margin, y, { align: "right" });
+          y += 16;
+        };
+
+        const addRule = () => {
+          ensureSpace(14);
+          doc.setDrawColor(215);
+          doc.line(margin, y, pageWidth - margin, y);
+          y += 13;
+        };
+
+        const dataQualityCount = summary.dataQualityIssues.length;
+        const confirmedCount = summary.confirmedIssues.length;
+        const highCount = issues.filter(x => x.severity === "High").length;
+        const mediumCount = issues.filter(x => x.severity === "Medium").length;
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(21);
+        doc.setTextColor(20);
+        doc.text("ControlProof", margin, y);
+        y += 25;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(13);
+        doc.setTextColor(65);
+        doc.text("Access Review & Analysis Report", margin, y);
+        y += 20;
+
+        doc.setFontSize(8.5);
+        doc.setTextColor(105);
+        doc.text("Report generated from user-selected CSV files processed locally in the browser.", margin, y);
+        y += 18;
+        addRule();
+
+        addHeading("Analysis Source");
+        addBody(sourceLabel || "Uploaded CSV files");
+        addBody(`${results.employees} employee rows | ${results.accounts} access rows`, { size: 8.8, color: 90 });
+
+        addHeading("Review Criteria Used");
+        addBody(`Termination deprovisioning threshold: ${results.criteria?.deprovisionHours || 24} hours`);
+        addBody(`Dormant-account threshold: ${results.criteria?.dormantDays || 90} days`);
+        addBody(`Recent-modification window: ${results.criteria?.recentDays || 30} days`);
+
+        addHeading("Executive Summary");
+        addBody(summary.overallStatus, { bold: true, size: 11 });
+        addBody(summary.overallDetail);
+        addBody(
+          "This report summarizes automated access-review procedures performed on the selected CSV files. It is not an audit opinion and does not replace human review of supporting evidence, business context, or control design.",
+          { size: 8.7, color: 90 }
+        );
+
+        addHeading("Control Assessment");
+        summary.controls.forEach(control => {
+          addBody(`${control.id} - ${control.name}`, { bold: true, size: 9.8, gap: 3 });
+          addBody(
+            `Coverage: ${control.coverage} | Result: ${control.status} | Confirmed exceptions: ${control.confirmed} | Evidence gaps: ${control.dq}`,
+            { size: 8.7, indent: 10, gap: 3 }
+          );
+          addBody(`Basis: ${control.basis}`, { size: 8.7, indent: 10, gap: 8 });
+        });
+
+        addHeading("Framework Mapping");
+        summary.controls.forEach(control => {
+          const mapping = frameworkMappings[control.id];
+          addBody(`${control.id} - ${control.name}`, { bold: true, size: 9.5, gap: 3 });
+          addBody(`SOX ITGC: ${mapping.sox}`, { size: 8.5, indent: 10, gap: 2 });
+          addBody(`SOC 2 TSC: ${mapping.soc2}`, { size: 8.5, indent: 10, gap: 2 });
+          addBody(`NIST CSF 2.0: ${mapping.nist}`, { size: 8.5, indent: 10, gap: 2 });
+          addBody(`ISO/IEC 27001:2022: ${mapping.iso}`, { size: 8.5, indent: 10, gap: 7 });
+        });
+        addBody(
+          "Framework mappings are an illustrative crosswalk for portfolio and review purposes. They are not a compliance determination or attestation conclusion.",
+          { size: 8.4, color: 95 }
+        );
+
+        addHeading("Summary Metrics");
+        addMetric("Terminated Users With Access", results.terminated);
+        addMetric(`Late Deprovisioning (>${results.criteria?.deprovisionHours || 24}h)`, results.lateDeprovision);
+        addMetric("Unmatched Active Accounts", results.orphaned);
+        addMetric("Privileged Access Anomalies", results.privileged);
+        addMetric(`Dormant Accounts (>${results.criteria?.dormantDays || 90}d)`, results.dormant);
+        addMetric("Role Mismatches", results.roleMismatch);
+        addMetric(`Recently Modified Records (${results.criteria?.recentDays || 30}d window)`, results.changes);
+        addMetric("Data Quality / Insufficient Evidence", dataQualityCount);
+        y += 4;
+
+        addHeading("Exception Overview");
+        addBody(`Confirmed exception instances: ${confirmedCount}`);
+        addBody(`Affected accounts: ${summary.affectedAccounts}`);
+        addBody(`Data quality / insufficient evidence rows: ${dataQualityCount}`);
+        addBody(`All surfaced rows by severity: High ${highCount} | Medium ${mediumCount}`);
+
+        if (issues.length === 0) {
+          addBody("No exceptions were detected by the available rules.");
+        } else {
+          addHeading("Detected Exceptions");
+          issues.forEach((issue, index) => {
+            ensureSpace(74);
+            addBody(
+              `${index + 1}. ${issue.type} - ${issue.severity}`,
+              { bold: true, size: 9.5, gap: 4 }
+            );
+            addBody(
+              `Employee: ${issue.employee} | Account: ${issue.account} | System: ${issue.system}`,
+              { size: 8.8, indent: 10, gap: 3 }
+            );
+            addBody(
+              `Related control: ${issue.control}`,
+              { size: 8.8, indent: 10, gap: 3 }
+            );
+            addBody(
+              issue.detail,
+              { size: 8.8, indent: 10, gap: 8 }
+            );
+          });
+        }
+
+        addHeading("Methodology and Limitations", 11);
+        addBody(
+          "A metric value of 0 means no confirmed exceptions were identified by that specific rule. Records with missing or invalid evidence may instead appear as Data Quality / Insufficient Evidence exceptions and should not be interpreted as confirmed passes.",
+          { size: 8.7, color: 90 }
+        );
+        addBody(
+          "One account may trigger more than one rule. Therefore, confirmed exception instances can exceed the number of affected accounts.",
+          { size: 8.7, color: 90 }
+        );
+        addBody(
+          "Recently Modified Records is informational and does not by itself prove that a permission or access level changed.",
+          { size: 8.7, color: 90 }
+        );
+
+        addHeading("Privacy", 11);
+        addBody(
+          "The selected CSV files are processed locally in the browser. ControlProof does not upload the files to a server.",
+          { size: 8.7, color: 90 }
+        );
+
+        addFooter();
+
+        const totalPages = doc.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+          doc.setPage(i);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8);
+          doc.setTextColor(125);
+          doc.text(
+            `Generated ${new Date().toLocaleString("en-US")}`,
+            pageWidth - margin,
+            28,
+            { align: "right" }
+          );
+        }
+
+        const employeeBase = sanitizeFilenamePart(employeeFile?.name || "employee_roster");
+        const accessBase = sanitizeFilenamePart(accessFile?.name || "access_export");
+        doc.save(`${employeeBase}_${accessBase}_Analysis_Report.pdf`);
+      };
+
+      const downloadAuditSummaryPDF = () => {
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+          alert("PDF library could not be loaded. Confirm that you are online and try again.");
+          return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: "pt", format: "letter" });
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 54;
+        const contentWidth = pageWidth - (margin * 2);
+        const footerY = pageHeight - 34;
+        let y = 58;
+
+        const addFooter = () => {
+          doc.setDrawColor(210);
+          doc.line(margin, footerY - 14, pageWidth - margin, footerY - 14);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8.5);
+          doc.setTextColor(100);
+          doc.text("Simulated technology risk and IT audit portfolio project", margin, footerY);
+          doc.text(`Page ${doc.getNumberOfPages()}`, pageWidth - margin, footerY, { align: "right" });
+        };
+
+        const ensureSpace = (needed = 52) => {
+          if (y + needed > footerY - 18) {
+            addFooter();
+            doc.addPage();
+            y = 54;
+          }
+        };
+
+        const addHeading = (text, size = 14) => {
+          ensureSpace(size + 24);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(size);
+          doc.setTextColor(25);
+          doc.text(text, margin, y);
+          y += size + 10;
+        };
+
+        const addBody = (text, opts = {}) => {
+          const size = opts.size || 10;
+          const indent = opts.indent || 0;
+          const gap = opts.gap ?? 8;
+          const width = contentWidth - indent;
+          doc.setFont("helvetica", opts.bold ? "bold" : "normal");
+          doc.setFontSize(size);
+          doc.setTextColor(opts.color || 65);
+          const lines = doc.splitTextToSize(text, width);
+          const lineHeight = size * 1.35;
+          ensureSpace(lines.length * lineHeight + gap);
+          doc.text(lines, margin + indent, y);
+          y += lines.length * lineHeight + gap;
+        };
+
+        const addLabelValue = (label, value) => {
+          ensureSpace(22);
+          doc.setFontSize(9.5);
+          doc.setTextColor(70);
+          doc.setFont("helvetica", "bold");
+          doc.text(`${label}:`, margin, y);
+          doc.setFont("helvetica", "normal");
+          doc.text(value, margin + 118, y);
+          y += 16;
+        };
+
+        const addRule = () => {
+          ensureSpace(16);
+          doc.setDrawColor(210);
+          doc.line(margin, y, pageWidth - margin, y);
+          y += 15;
+        };
+
+        // Title block
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.setTextColor(20);
+        doc.text("ControlProof", margin, y);
+        y += 27;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(13);
+        doc.setTextColor(70);
+        doc.text("Audit Summary - Logical Access Controls", margin, y);
+        y += 24;
+
+        doc.setFontSize(8.5);
+        doc.setTextColor(110);
+        doc.text("SIMULATED ENGAGEMENT USING SYNTHETIC DATA", margin, y);
+        y += 20;
+        addRule();
+
+        addHeading("Engagement Overview");
+        addLabelValue("Audit Period", "January 1 - June 30, 2025");
+        addLabelValue("Testing", "July 2025");
+        addLabelValue("Remediation", "September 2025");
+        addLabelValue("Retest", "October 2025");
+        addLabelValue("Systems", "GitHub, Google Workspace, AWS");
+        addLabelValue("Scope", "Logical access controls: termination, privileged access, quarterly access review");
+        y += 5;
+
+        addHeading("Risk-Based Audit Plan");
+        addBody(
+          "Logical Access Management was selected for the current audit cycle because unauthorized access presents high potential impact, the environment includes multiple cloud platforms, privileged access is used across critical systems, and employee lifecycle changes create recurring access risk."
+        );
+
+        addHeading("Controls Tested");
+        addBody("AC-03 - Termination Access Removal: access disabled within 24 hours of the employee's effective termination time.");
+        addBody("AC-05 - Privileged Access Pre-Approval: direct manager approval documented before privileged access is provisioned.");
+        addBody("AC-07 - Quarterly User Access Review: system owners review complete access listings and track removals to completion.");
+
+        addHeading("Testing Results");
+        addBody("AC-03: NOT OPERATING EFFECTIVELY. Full-population testing identified 3 employee-level exceptions among 127 terminated employees.");
+
+        addBody("AC-05: NOT OPERATING EFFECTIVELY. A risk-based sample of 15 privileged-access grants identified 2 exceptions (13.3%).");
+        addBody("AC-07: OPERATING EFFECTIVELY. All 6 quarterly access-review events were completed and all 11 identified removals were remediated within the required window.");
+
+        addHeading("Audit Findings");
+        addBody("FIND-01 - HIGH - Delayed Termination Access Removal");
+        addBody(
+          "Condition: 3 of 127 terminated employees retained at least one in-scope account beyond the 24-hour threshold. Root cause: manual HR-to-IAM communication without an independent completeness mechanism.",
+          { indent: 12 }
+        );
+        addBody(
+          "Recommendation: establish a formal mechanism to ensure termination events are completely and timely communicated to IAM and independently verify timely removal across in-scope systems.",
+          { indent: 12 }
+        );
+
+        addBody("FIND-02 - MEDIUM - Privileged Access Pre-Approval Not Enforced");
+        addBody(
+          "Condition: 2 of 15 privileged-access grants were provisioned before documented manager approval. Root cause: approval occurred outside the provisioning workflow.",
+          { indent: 12 }
+        );
+        addBody(
+          "Recommendation: implement workflow enforcement that prevents privileged provisioning until required approval is documented.",
+          { indent: 12 }
+        );
+
+        addHeading("Remediation and Retest");
+        addBody("FIND-01: automated termination-event transmission and daily active-user reconciliation implemented. Retest: 38 termination events, 0 exceptions, average deprovisioning time 1.8 hours.");
+        addBody("FIND-02: workflow-based approval gating implemented. Retest: 10 post-implementation privileged-access grants, 0 exceptions.");
+
+        addHeading("Engagement Conclusion");
+        addBody(
+          "For the three logical-access controls included in this simulated engagement, AC-03 and AC-05 contained design deficiencies and did not operate effectively during the January 1 - June 30, 2025 audit period. AC-07 was appropriately designed and operated effectively for all six quarterly review events tested."
+        );
+        addBody(
+          "Two findings were issued: one High and one Medium. Simulated remediation for AC-03 and AC-05 was retested in October 2025 with no exceptions in the defined retest populations/selections."
+        );
+
+        addHeading("Scope Limitation", 11);
+        addBody(
+          "This conclusion is limited to the controls and periods tested and is not an opinion on the hypothetical organization's entire logical-access environment. This portfolio project uses synthetic data and does not represent a real customer audit.",
+          { size: 8.8, color: 95 }
+        );
+
+        addFooter();
+
+        const totalPages = doc.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+          doc.setPage(i);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8);
+          doc.setTextColor(125);
+          doc.text(
+            `Generated ${new Date().toLocaleDateString("en-US")}`,
+            pageWidth - margin,
+            32,
+            { align: "right" }
+          );
+        }
+
+        doc.save("ControlProof_Audit_Summary.pdf");
+      };
+
+      const Home = () => (
+        <main className="section overview-section">
+          <div className="container">
+            <div className="home-shell">
+              <div className="home-main">
+                <span className="eyebrow">Technology Risk Portfolio</span>
+                <h2 className="hero-title">Technology Risk & Controls Assessment</h2>
+                <p className="hero-sub">
+                  A simulated technology risk and IT audit engagement combining risk-based audit planning,
+                  control testing, evidence analysis, and a working access-review automation tool.
+                </p>
+                <p className="credential-line">Passed the CISA Exam · Applied CISA audit and governance concepts</p>
+                <div className="buttons home-actions">
+                  <button className="primary" onClick={() => setTab("tool")}>Open Access Review Tool</button>
+                  <button className="secondary" onClick={() => setTab("case")}>View Audit Case Study</button>
+                </div>
+              </div>
+
+              <aside className="home-aside how-aside">
+                <span className="eyebrow">Workflow</span>
+                <h3>How It Works</h3>
+                <div className="how-aside-list">
+                  <div className="how-aside-step">
+                    <span className="how-aside-number">01</span>
+                    <div>
+                      <strong>Upload Data</strong>
+                      <p>Provide your employee roster and system access export.</p>
+                    </div>
+                  </div>
+                  <div className="how-aside-step">
+                    <span className="how-aside-number">02</span>
+                    <div>
+                      <strong>Define Criteria</strong>
+                      <p>Set deprovisioning, dormancy, and recent-change thresholds.</p>
+                    </div>
+                  </div>
+                  <div className="how-aside-step">
+                    <span className="how-aside-number">03</span>
+                    <div>
+                      <strong>Assess Controls</strong>
+                      <p>Evaluate logical-access controls and identify exceptions.</p>
+                    </div>
+                  </div>
+                  <div className="how-aside-step">
+                    <span className="how-aside-number">04</span>
+                    <div>
+                      <strong>Review Findings</strong>
+                      <p>Review exceptions, control impact, and remediation context.</p>
+                    </div>
+                  </div>
+                </div>
+              </aside>
+            </div>
+
+            <div className="home-divider"></div>
+
+            <div className="home-capabilities">
+              <div className="capability">
+                <div className="step-tag">PLANNING</div>
+                <h4>Risk-Based Audit</h4>
+                <p>Audit universe, risk prioritization, planned coverage, and scope selection.</p>
+              </div>
+              <div className="capability">
+                <div className="step-tag">EXECUTION</div>
+                <h4>Control Testing</h4>
+                <p>Design assessment, operating effectiveness, evidence reliability, and workpapers.</p>
+              </div>
+              <div className="capability">
+                <div className="step-tag">TOOLING</div>
+                <h4>Automation</h4>
+                <p>Browser-based access review, reconciliation, and exception detection.</p>
+              </div>
+            </div>
+
+            <div className="flow-summary">
+              <span className="node">Audit universe</span><span className="arrow">→</span>
+              <span className="node">Risk prioritization</span><span className="arrow">→</span>
+              <span className="node">Audit plan</span><span className="arrow">→</span>
+              <span className="node">Control testing</span><span className="arrow">→</span>
+              <span className="node">Findings</span><span className="arrow">→</span>
+              <span className="node">Remediation</span><span className="arrow">→</span>
+              <span className="node">Automated detection</span>
+            </div>
+          </div>
+        </main>
+      );
+
+      const Tool = () => (
+        <main className="section">
+          <div className="container">
+            <div className="workbench-header">
+              <div className="workbench-header-copy">
+                <span className="eyebrow">Access Review Workbench</span>
+                <h2 className="section-title">Access Review & Analysis Tool</h2>
+                <p className="page-intro">
+                  Upload and analyze access data, review control exceptions, and export the current analysis.
+                  Files are processed locally in the browser and are not uploaded to a server.
+                </p>
+              </div>
+              <div className="workbench-actions">
+                <button className="secondary" onClick={clear}>Clear</button>
+              </div>
+            </div>
+
+            <div className="workbench-shell">
+              <section className="panel">
+                <div className="panel-title"><span className="step-number">1</span>Upload access data</div>
+                <p className="panel-copy">Select an employee roster and a system-access export. The tool evaluates only the files you select.</p>
+
+                <div className="upload-grid">
+                  <div className="upload">
+                    <label>Employee Roster (CSV)</label>
+                    <input ref={employeeInputRef} type="file" accept=".csv,text/csv" onChange={handleEmployeeFileChange} />
+                    {employeeFile && <p>Selected: {employeeFile.name}</p>}
+                  </div>
+                  <div className="upload">
+                    <label>System Access Export (CSV)</label>
+                    <input ref={accessInputRef} type="file" accept=".csv,text/csv" onChange={handleAccessFileChange} />
+                    {accessFile && <p>Selected: {accessFile.name}</p>}
+                  </div>
+                </div>
+
+                <div className="run-bar">
+                  <div className="run-note">Core matching requires employee_id in both files.</div>
+                  <button className="primary" onClick={analyzeFiles} disabled={!employeeFile || !accessFile}>Run Analysis</button>
+                </div>
+
+                <div className="schema-toggle">
+                  <details className="schema-details">
+                    <summary>Expected fields and validation behavior</summary>
+                    <div className="schema">
+                      <strong>Employee roster:</strong> employee_id, name, status, department, termination_time<br/>
+                      <strong>Access export:</strong> employee_id, account_id, system, role, active, last_active, privileged,
+                      approval_status, approval_time, provisioned_time, deactivation_time, expected_role, modified_date
+                    </div>
+                    <p style={{marginTop:"9px", fontSize:"10.5px", color:"#667085"}}>
+                      Duplicate employee_id values in the employee roster stop the analysis. If a required column is absent, the related metric is shown as N/A.
+                      If the column exists but a required row-level value is blank or invalid, that record is surfaced as insufficient evidence / a data-quality exception rather than being silently treated as a pass.
+                    </p>
+                  </details>
+                </div>
+
+                {error && <div className="error">{error}</div>}
+              </section>
+
+              <aside className="panel">
+                <div className="panel-title"><span className="step-number">2</span>Review criteria</div>
+                <div className="criteria-stack">
+                  <div className="criteria-input">
+                    <label>Termination Deprovisioning Threshold (hours)</label>
+                    <input type="number" min="1" step="1" value={criteria.deprovisionHours}
+                      onChange={e => updateCriterion("deprovisionHours", e.target.value)} />
+                    <p>Accounts disabled after this threshold are flagged as late deprovisioning.</p>
+                  </div>
+                  <div className="criteria-input">
+                    <label>Dormant Account Threshold (days)</label>
+                    <input type="number" min="1" step="1" value={criteria.dormantDays}
+                      onChange={e => updateCriterion("dormantDays", e.target.value)} />
+                    <p>Active accounts with no recorded activity beyond this threshold are flagged.</p>
+                  </div>
+                  <div className="criteria-input">
+                    <label>Recent Modification Window (days)</label>
+                    <input type="number" min="1" step="1" value={criteria.recentDays}
+                      onChange={e => updateCriterion("recentDays", e.target.value)} />
+                    <p>Access records modified within this window are counted for review.</p>
+                  </div>
+                </div>
+                <p style={{marginTop:"12px", fontSize:"10px", color:"#98a2b3"}}>
+                  Changing a review criterion clears the current analysis results. Re-run the analysis to apply the new threshold.
+                </p>
+              </aside>
+            </div>
+
+            {results && (() => {
+              const summary = getAnalysisSummary();
+              return (
+                <div className="results-shell">
+                  <div className="info" ref={analysisSourceRef}>
+                    Analysis source: <strong>{sourceLabel}</strong> · {results.employees} employee rows · {results.accounts} access rows
+                  </div>
+
+                  <div className="results-top-actions">
+                    <button className="primary" onClick={downloadAnalysisReportPDF}
+                      title="Download the current uploaded-file analysis as PDF">
+                      Download Report
+                    </button>
+                    <button className="secondary" onClick={downloadExceptionsCSV}
+                      title="Download surfaced exceptions as CSV">
+                      Export Exceptions
+                    </button>
+                  </div>
+
+                  <section className="executive-summary">
+                    <div className="summary-kicker">Executive Summary</div>
+
+                    <div className="assessment-hero">
+                      <div className="assessment-hero-copy">
+                        <div className="assessment-hero-label">Overall Assessment</div>
+                        <div className="assessment-hero-status">{summary.overallStatus}</div>
+                        <div className="assessment-hero-detail">{summary.overallDetail}</div>
+                      </div>
+
+                      <div className="assessment-hero-stats">
+                        <div className="assessment-hero-stat">
+                          <strong>{summary.confirmedIssues.length}</strong>
+                          <span>Confirmed exceptions</span>
+                        </div>
+                        <div className="assessment-hero-stat">
+                          <strong>{summary.affectedAccounts}</strong>
+                          <span>Affected accounts</span>
+                        </div>
+                        <div className="assessment-hero-stat">
+                          <strong>{summary.dataQualityIssues.length}</strong>
+                          <span>Evidence gaps</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="executive-grid metric-summary-grid">
+                      <div className="executive-card high-accent">
+                        <div className="executive-label">Terminated With Access</div>
+                        <div className="executive-value">{metricValue(results.terminated)}</div>
+                        <div className="executive-detail">Users still have active accounts</div>
+                      </div>
+
+                      <div className="executive-card high-accent">
+                        <div className="executive-label">Privileged Access Issues</div>
+                        <div className="executive-value">{metricValue(results.privileged)}</div>
+                        <div className="executive-detail">Missing or untimely pre-approval evidence</div>
+                      </div>
+
+                      <div className="executive-card medium-accent">
+                        <div className="executive-label">Dormant Accounts</div>
+                        <div className="executive-value">{metricValue(results.dormant)}</div>
+                        <div className="executive-detail">No activity &gt;{results.criteria?.dormantDays || 90} days</div>
+                      </div>
+                    </div>
+                  </section>
+
+                  <div className="result-toolbar">
+                    <div>
+                      <h3>Detected Exceptions</h3>
+                      <p>Review each surfaced exception first, then use the control assessment and framework crosswalk for context.</p>
+                    </div>
+                  </div>
+
+                  <div className="results-grid">
+                    <div>
+                      <div className="exception-list">
+                        {issues.length === 0 ? (
+                          <div className="exception-empty">No exceptions were detected by the available rules.</div>
+                        ) : (
+                          issues.map((x, i) => (
+                            <div key={i} className={`exception-item ${x.severity === "High" ? "" : "medium"}`}>
+                              <div className="exception-header">
+                                <div className="exception-title">{x.type}</div>
+                                <span className={`badge ${x.severity === "High" ? "high" : "medium"}`}>{x.severity}</span>
+                              </div>
+                              <div className="exception-meta">
+                                <span>Employee<strong>{x.employee}</strong></span>
+                                <span>Account<strong>{x.account}</strong></span>
+                                <span>System<strong>{x.system}</strong></span>
+                                <span>Control<strong>{x.control}</strong></span>
+                              </div>
+                              <div className="exception-detail">{x.detail}</div>
+                              <div className="exception-trace">
+                                {x.control.includes("AC-03") && <>
+                                  <button className="action-link" onClick={() => scrollToAuditAnchor("control-ac03")}>AC-03</button>
+                                  <button className="action-link" onClick={() => scrollToAuditAnchor("wp-ac01")}>WP-AC-01</button>
+                                  <button className="action-link" onClick={() => scrollToAuditAnchor("finding-01")}>FIND-01</button>
+                                </>}
+                                {x.control.includes("AC-05") && <>
+                                  <button className="action-link" onClick={() => scrollToAuditAnchor("control-ac05")}>AC-05</button>
+                                  <button className="action-link" onClick={() => scrollToAuditAnchor("wp-ac02")}>WP-AC-02</button>
+                                  <button className="action-link" onClick={() => scrollToAuditAnchor("finding-02")}>FIND-02</button>
+                                </>}
+                                {x.control.includes("AC-07") && <>
+                                  <button className="action-link" onClick={() => scrollToAuditAnchor("control-ac07")}>AC-07</button>
+                                  <button className="action-link" onClick={() => scrollToAuditAnchor("wp-ac03")}>WP-AC-03</button>
+                                </>}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+
+                      <div className="summary-block" style={{marginTop:"18px"}}>
+                        <div className="wp">
+                          <div className="wp-head">
+                            <strong>Control Assessment</strong>
+                            <span className={`badge ${
+                              summary.confirmedIssues.length > 0 ? "high" :
+                              summary.dataQualityIssues.length > 0 ? "medium" :
+                              summary.overallStatus === "No exceptions detected" ? "effective" : "blue"
+                            }`}>{summary.overallStatus}</span>
+                          </div>
+                          <div className="field">
+                            <div className="label">Exception Population</div>
+                            <div className="value">{summary.confirmedIssues.length} confirmed exception instance(s) across {summary.affectedAccounts} affected account(s)</div>
+                          </div>
+                          <div className="field">
+                            <div className="label">Scope Note</div>
+                            <div className="value">This automated review evaluates the uploaded data against the available access-control rules. It is not an audit opinion and does not replace human review of supporting evidence, business context, or control design.</div>
+                          </div>
+                        </div>
+
+                        <div className="table-shell">
+                          <table>
+                            <thead>
+                              <tr><th>Control</th><th>Coverage</th><th>Assessment</th><th>Confirmed Exceptions</th><th>Evidence Gaps</th><th>Basis</th></tr>
+                            </thead>
+                            <tbody>
+                              {summary.controls.map(control => (
+                                <tr key={control.id}>
+                                  <td><strong style={{color:"#182230"}}>{control.id}</strong><br/>{control.name}</td>
+                                  <td>{control.coverage}</td>
+                                  <td>{control.status}</td>
+                                  <td>{control.confirmed}</td>
+                                  <td>{control.dq}</td>
+                                  <td>{control.basis}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      <div className="secondary-panel" style={{marginTop:"18px"}}>
+                        <h3>Framework Mapping</h3>
+                        <p>
+                          The automated access tests are cross-referenced to common technology-risk and assurance frameworks.
+                          This is an illustrative mapping, not a compliance opinion or SOC / ISO attestation conclusion.
+                        </p>
+                        <div className="table-shell" style={{marginTop:"12px"}}>
+                          <table>
+                            <thead>
+                              <tr><th>ControlProof Control</th><th>SOX ITGC</th><th>SOC 2 Trust Services Criteria</th><th>NIST CSF 2.0</th><th>ISO/IEC 27001:2022</th></tr>
+                            </thead>
+                            <tbody>
+                              {["AC-03","AC-05","AC-07"].map(controlId => {
+                                const mapping = frameworkMappings[controlId];
+                                const controlName =
+                                  controlId === "AC-03" ? "Termination Access Removal" :
+                                  controlId === "AC-05" ? "Privileged Access Pre-Approval" :
+                                  "Access Review / Reconciliation";
+                                return (
+                                  <tr key={controlId}>
+                                    <td><strong style={{color:"#182230"}}>{controlId}</strong><br/>{controlName}</td>
+                                    <td>{mapping.sox}</td>
+                                    <td>{mapping.soc2}</td>
+                                    <td>{mapping.nist}</td>
+                                    <td>{mapping.iso}</td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                        <p style={{marginTop:"9px", fontSize:"10px", color:"#98a2b3"}}>
+                          SOX ITGC does not prescribe one universal control-number taxonomy; the mapping uses common Logical Access control categories.
+                        </p>
+                      </div>
+                    </div>
+
+                    <aside className="result-side">
+                      <div className="metric-list">
+                        <div className="metric alert">
+                          <h4>Terminated Users With Access</h4>
+                          <div className="num">{metricValue(results.terminated)}</div>
+                          <p>{metricText(results.terminated, "Unique terminated employees with one or more active accounts.", "Not evaluated: employee status and/or account active-status fields are missing.")}</p>
+                        </div>
+                        <div className="metric alert">
+                          <h4>Late Deprovisioning (&gt;{results.criteria?.deprovisionHours || 24}h)</h4>
+                          <div className="num">{metricValue(results.lateDeprovision)}</div>
+                          <p>{metricText(results.lateDeprovision, `Accounts disabled more than ${results.criteria?.deprovisionHours || 24} hours after the effective termination timestamp.`, "Not evaluated: employment status, termination timestamp, and/or deactivation timestamp is missing.")}</p>
+                        </div>
+                        <div className="metric alert">
+                          <h4>Unmatched Active Accounts</h4>
+                          <div className="num">{metricValue(results.orphaned)}</div>
+                          <p>{metricText(results.orphaned, "Active account cannot be matched to the employee roster and requires ownership/authorization review.", "Not evaluated: account active-status field is missing.")}</p>
+                        </div>
+                        <div className="metric warn">
+                          <h4>Privileged Access Anomalies</h4>
+                          <div className="num">{metricValue(results.privileged)}</div>
+                          <p>{metricText(results.privileged, "Privileged access lacks complete or timely pre-provisioning approval evidence; missing or invalid row-level timestamps are treated as exceptions.", "Not evaluated: privileged/role, provisioning timestamp, and approval timestamp are required to test pre-provisioning approval.")}</p>
+                        </div>
+                        <div className="metric warn">
+                          <h4>Dormant Accounts (&gt;{results.criteria?.dormantDays || 90}d)</h4>
+                          <div className="num">{metricValue(results.dormant)}</div>
+                          <p>{metricText(results.dormant, `Active account has no recorded activity for more than ${results.criteria?.dormantDays || 90} days.`, "Not evaluated: active-status and/or last-activity fields are missing.")}</p>
+                        </div>
+                        <div className="metric warn">
+                          <h4>Role Mismatches</h4>
+                          <div className="num">{metricValue(results.roleMismatch)}</div>
+                          <p>{metricText(results.roleMismatch, "Assigned role differs from the provided expected role.", "Not evaluated: role and/or expected-role fields are missing.")}</p>
+                        </div>
+                        <div className="metric neutral">
+                          <h4>Recently Modified Records ({results.criteria?.recentDays || 30}d)</h4>
+                          <div className="num">{metricValue(results.changes)}</div>
+                          <p>{metricText(results.changes, `Access records modified within the last ${results.criteria?.recentDays || 30} days. This does not by itself prove a permission change.`, "Not evaluated: modification-date field is missing.")}</p>
+                        </div>
+                      </div>
+
+                      <div className="secondary-panel">
+                        <h3>Traceability</h3>
+                        <p>Detected exceptions are intentionally mapped to the controls and workpapers demonstrated in the case study.</p>
+                        <div className="link-row">
+                          <span className="chip">Raw Data</span><span className="chip">Exception</span><span className="chip">Control</span>
+                          <span className="chip">Workpaper</span><span className="chip">Finding</span><span className="chip">Remediation</span>
+                        </div>
+                        <div className="buttons">
+                          <button className="secondary" onClick={() => setTab("case")}>View Audit Case Study</button>
+                        </div>
+                      </div>
+                    </aside>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        </main>
+      );
+
+      const CaseStudy = () => (
+        <main className="section">
+          <div className="container">
+            <div className="case-layout">
+              <aside className="case-nav">
+                <div className="case-nav-title">Case study</div>
+                <button onClick={() => document.getElementById("case-planning")?.scrollIntoView({behavior:"smooth"})}>01 Planning</button>
+                <button onClick={() => document.getElementById("case-risk")?.scrollIntoView({behavior:"smooth"})}>02 Risk Assessment</button>
+                <button onClick={() => document.getElementById("case-rcm")?.scrollIntoView({behavior:"smooth"})}>03 Risk & Control Matrix</button>
+                <button onClick={() => document.getElementById("case-testing")?.scrollIntoView({behavior:"smooth"})}>04 Testing</button>
+                <button onClick={() => document.getElementById("case-findings")?.scrollIntoView({behavior:"smooth"})}>05 Findings</button>
+                <button onClick={() => document.getElementById("case-remediation")?.scrollIntoView({behavior:"smooth"})}>06 Remediation</button>
+                <button onClick={() => document.getElementById("case-conclusion")?.scrollIntoView({behavior:"smooth"})}>07 Conclusion</button>
+              </aside>
+
+              <article className="case-document">
+                <div className="case-document-header">
+                  <span className="eyebrow">Simulated Audit Engagement</span>
+                  <h2 className="section-title">IT Audit Case Study: Logical Access Controls</h2>
+                  <p className="page-intro">A fixed synthetic case study demonstrating risk-based planning, control design assessment, operating-effectiveness testing, findings, remediation, and retesting.</p>
+                  <div className="buttons">
+                    <button className="secondary" onClick={downloadAuditSummaryPDF}>Download Audit Summary (PDF)</button>
+                  </div>
+                </div>
+
+            <section className="case-section" id="case-planning">
+              <h3>1. Audit Universe & Risk-Based Audit Planning</h3>
+              <p>
+                Before scoping this engagement, the hypothetical organization's audit universe was assessed
+                to determine which areas warranted review in the current cycle. Each area was evaluated using
+                potential impact, likelihood, recent environmental change, and prior-issue history.
+              </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Audit Area</th>
+                    <th>Impact</th>
+                    <th>Likelihood</th>
+                    <th>Recent Change</th>
+                    <th>Prior Issues</th>
+                    <th>Priority</th>
+                    <th>Planned Coverage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Logical Access Management</td>
+                    <td><span className="badge high">High</span></td>
+                    <td><span className="badge high">High</span></td>
+                    <td><span className="badge high">High</span></td>
+                    <td><span className="badge medium">Medium</span></td>
+                    <td><span className="badge high">High</span></td>
+                    <td><strong style={{color:"#c9d1d9"}}>Current Cycle — Full Audit</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Change Management</td>
+                    <td><span className="badge high">High</span></td>
+                    <td><span className="badge medium">Medium</span></td>
+                    <td><span className="badge medium">Medium</span></td>
+                    <td><span className="badge low">Low</span></td>
+                    <td><span className="badge medium">Medium</span></td>
+                    <td>Future Cycle</td>
+                  </tr>
+                  <tr>
+                    <td>Backup & Recovery</td>
+                    <td><span className="badge high">High</span></td>
+                    <td><span className="badge low">Low</span></td>
+                    <td><span className="badge low">Low</span></td>
+                    <td><span className="badge low">Low</span></td>
+                    <td><span className="badge medium">Medium</span></td>
+                    <td>Future Cycle</td>
+                  </tr>
+                  <tr>
+                    <td>Incident Management</td>
+                    <td><span className="badge high">High</span></td>
+                    <td><span className="badge medium">Medium</span></td>
+                    <td><span className="badge medium">Medium</span></td>
+                    <td><span className="badge low">Low</span></td>
+                    <td><span className="badge medium">Medium</span></td>
+                    <td>Ongoing Monitoring</td>
+                  </tr>
+                  <tr>
+                    <td>Vendor Access</td>
+                    <td><span className="badge medium">Medium</span></td>
+                    <td><span className="badge medium">Medium</span></td>
+                    <td><span className="badge high">High</span></td>
+                    <td><span className="badge medium">Medium</span></td>
+                    <td><span className="badge medium">Medium</span></td>
+                    <td>Future Cycle</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h4>Audit Selection Rationale</h4>
+              <p>
+                Logical Access Management was selected for detailed review because unauthorized access presents
+                high potential impact, the environment includes multiple cloud platforms, privileged access is
+                used across critical systems, and employee lifecycle changes create recurring access risk.
+              </p>
+
+              <h4>2025 Audit Plan Decision</h4>
+              <p>
+                Logical Access Management was selected for the current audit cycle based on its relative risk profile.
+                The remaining areas were deferred to future audit cycles or ongoing risk monitoring based on their
+                relative priority and current risk indicators.
+              </p>
+            </section>
+
+            <section className="case-section">
+              <h3>2. Audit Planning</h3>
+              <h4>Objective</h4>
+              <p>Determine whether selected logical access controls are appropriately designed and operating effectively to prevent or detect unauthorized access to in-scope systems.</p>
+              <h4>Scope</h4>
+              <ul>
+                <li>AC-03: Termination access removal</li>
+                <li>AC-05: Privileged access pre-approval</li>
+                <li>AC-07: Quarterly user access review</li>
+                <li>Systems: GitHub, Google Workspace, AWS</li>
+              </ul>
+              <h4>Audit Period</h4>
+              <p>January 1 - June 30, 2025</p>
+            </section>
+
+            <section className="case-section">
+              <h3>3. Process Understanding</h3>
+              <p>Documented the user lifecycle to identify where preventive and detective controls should operate.</p>
+              <div className="flow">
+                <div className="step">Hire</div><div className="step">Access Request</div><div className="step">Manager Approval</div>
+                <div className="step">Provisioning</div><div className="step">Active Use / Review</div><div className="step">Termination</div>
+                <div className="step">Deprovisioning</div>
+              </div>
+            </section>
+
+            <section className="case-section" id="case-risk">
+              <h3>4. Risk Assessment</h3>
+              <table>
+                <thead><tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Rating</th></tr></thead>
+                <tbody>
+                  <tr><td>Former employees retain access after their effective termination time.</td><td>Medium</td><td>High</td><td><span className="badge high">High</span></td></tr>
+                  <tr><td>Privileged access is granted without prior authorization.</td><td>Medium</td><td>High</td><td><span className="badge high">High</span></td></tr>
+                  <tr><td>Access that was once appropriate becomes excessive or unnecessary and remains undetected.</td><td>Medium</td><td>Medium</td><td><span className="badge medium">Medium</span></td></tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section className="case-section" id="case-rcm">
+              <h3>5. Risk & Control Matrix</h3>
+              <table>
+                <thead><tr><th>ID</th><th>Risk</th><th>Control</th><th>Type</th><th>Frequency</th><th>Test</th></tr></thead>
+                <tbody>
+                  <tr id="control-ac03"><td>AC-03</td><td>Terminated users retain access</td><td>IAM disables access to in-scope systems within 24 hours of the employee's effective termination time.</td><td>Preventive</td><td>Event-driven / per termination</td><td>Reconcile termination population to system-account records and test deactivation timing.</td></tr>
+                  <tr id="control-ac05"><td>AC-05</td><td>Unauthorized privileged access</td><td>Direct manager approval is documented before privileged access is provisioned.</td><td>Preventive</td><td>Per request</td><td>Inspect request, approval timestamp, provisioning timestamp, and retained evidence.</td></tr>
+                  <tr id="control-ac07"><td>AC-07</td><td>Inappropriate access remains active</td><td>System owners review complete user-access listings quarterly, document decisions, and track identified removals to completion.</td><td>Detective</td><td>Quarterly</td><td>Inspect report reliability, reviewer appropriateness, review evidence, identified exceptions, and remediation tracking.</td></tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section className="case-section">
+              <h3>6. Control Design Assessment</h3>
+
+              <div className="wp">
+                <div className="wp-head"><strong>AC-03 - Termination Access Removal</strong><span className="badge medium">Design deficiency</span></div>
+                <div className="field"><div className="label">Reasoning</div><div className="value">The control relies on HR-to-IAM email notification but does not include an independent completeness mechanism to identify termination events that were not communicated, were delayed, or were overlooked.</div></div>
+                <div className="field"><div className="label">Design Gap</div><div className="value">No reconciliation exists between the authoritative HR population and active system accounts to detect missed deprovisioning.</div></div>
+              </div>
+
+              <div className="wp">
+                <div className="wp-head"><strong>AC-05 - Privileged Access Approval</strong><span className="badge medium">Design deficiency</span></div>
+                <div className="field"><div className="label">Reasoning</div><div className="value">Approval occurs outside the provisioning workflow. The process therefore does not prevent IT from provisioning access before approval is documented.</div></div>
+              </div>
+
+              <div className="wp">
+                <div className="wp-head"><strong>AC-07 - Quarterly User Access Review</strong><span className="badge effective">Design effective</span></div>
+                <div className="field"><div className="label">Reasoning</div><div className="value">The control requires a complete user listing, review by the accountable system owner, explicit consideration of privileged access, documented reviewer decisions, and tracked remediation of identified access changes.</div></div>
+              </div>
+            </section>
+
+            <section className="case-section" id="case-testing">
+              <h3>7. Operating Effectiveness Testing & Workpapers</h3>
+
+              <div className="wp" id="wp-ac01">
+                <div className="wp-head"><strong>Termination Access Removal Testing</strong><span className="ref">WP-AC-01</span></div>
+                <div className="meta-grid">
+                  <div className="meta-item"><div className="k">Control Description</div><div className="v">Upon employee termination, IAM disables all in-scope system access within 24 hours of the employee's effective termination time.</div></div>
+                  <div className="meta-item"><div className="k">Test Objective</div><div className="v">Determine whether terminated-user access was removed completely and within the required timeframe.</div></div>
+                  <div className="meta-item"><div className="k">Audit Period</div><div className="v">January 1 - June 30, 2025</div></div>
+                  <div className="meta-item"><div className="k">Testing Date</div><div className="v">July 10, 2025</div></div>
+                  <div className="meta-item"><div className="k">Evidence Obtained</div><div className="v">HR termination population; GitHub, Google Workspace, and AWS user-access extracts.</div></div>
+                  <div className="meta-item"><div className="k">Procedure</div><div className="v">Validate population reliability, reconcile terminated employees to system accounts, calculate deactivation elapsed time, inspect post-termination activity, and evaluate exceptions.</div></div>
+                </div>
+
+                <div className="field"><div className="label">Control ID</div><div className="value">AC-03</div></div>
+                <div className="field"><div className="label">Population</div><div className="value">127 employees terminated during the audit period, associated with 286 accounts across GitHub, Google Workspace, and AWS.</div></div>
+                <div className="field">
+                  <div className="label">Representative Synthetic Evidence Excerpt</div>
+                  <div className="value">
+                    <button className="action-link" onClick={() => setOpenEvidence("HR_Terminations.csv")}>View HR_Terminations.csv excerpt</button>
+                    <button className="action-link" onClick={() => setOpenEvidence("System_Access_Extract.csv")}>View System_Access_Extract.csv excerpt</button>
+                    {openEvidence === "HR_Terminations.csv" && evidenceViewer("HR_Terminations.csv")}
+                    {openEvidence === "System_Access_Extract.csv" && evidenceViewer("System_Access_Extract.csv")}
+                    <div style={{marginTop:"8px", fontSize:"11px", color:"#6e7681"}}>Excerpt only. The workpaper population counts represent the simulated full population used for the case study.</div>
+                  </div>
+                </div>
+
+                <div className="field"><div className="label">Population Completeness</div><div className="value">Obtained the HR termination report directly from the authoritative HR system and reconciled the total of 127 terminated employees to monthly HR termination summaries.</div></div>
+                <div className="field"><div className="label">Population Accuracy</div><div className="value">Selected 5 records and agreed employee ID, employee name, department, and effective termination date to underlying HR records. No discrepancies noted.</div></div>
+                <div className="field"><div className="label">Testing Approach</div><div className="value">Full-population reconciliation. Each of the 127 terminated employees was matched to all associated accounts in each in-scope system. Each account was independently evaluated for deactivation timing and post-termination activity.</div></div>
+                <div className="field"><div className="label">Attributes</div>
+                  <table><thead><tr><th>Attribute</th><th>Test</th></tr></thead><tbody>
+                    <tr><td>A</td><td>Employee appears in authoritative termination population</td></tr>
+                    <tr><td>B</td><td>All associated in-scope accounts identified</td></tr>
+                    <tr><td>C</td><td>Account deactivated</td></tr>
+                    <tr><td>D</td><td>Deactivation occurred within 24 hours of effective termination time</td></tr>
+                    <tr><td>E</td><td>No login or activity occurred after effective termination time</td></tr>
+                  </tbody></table>
+                </div>
+                <div className="field"><div className="label">Representative Results</div>
+                  <table><thead><tr><th>ID</th><th>System</th><th>Elapsed</th><th>D</th><th>E</th><th>Result</th></tr></thead><tbody>
+                    <tr><td>EMP-014</td><td>GitHub</td><td>2 hrs</td><td>Pass</td><td>Pass</td><td>Pass</td></tr>
+                    <tr><td>EMP-029</td><td>Google Workspace</td><td>72 hrs</td><td>Fail</td><td>Pass</td><td>Exception</td></tr>
+                    <tr><td>EMP-088</td><td>AWS</td><td>96 hrs</td><td>Fail</td><td>Pass</td><td>Exception</td></tr>
+                    <tr><td>EMP-142</td><td>GitHub</td><td>Still active at 10 days</td><td>Fail</td><td>Pass</td><td>Exception</td></tr>
+                  </tbody></table>
+                </div>
+                <div className="field"><div className="label">Result</div><div className="value">3 employee-level exceptions were identified among 127 terminated employees. EMP-142 is classified as a terminated-user account remaining active, not as an unmatched active account.</div></div>
+                <div className="field"><div className="label">Conclusion</div><div className="value"><strong style={{color:"#f85149"}}>Not operating effectively.</strong> The control did not consistently achieve timely deprovisioning during the period tested.</div></div>
+              </div>
+
+              <div className="wp" id="wp-ac02">
+                <div className="wp-head"><strong>Privileged Access Approval Testing</strong><span className="ref">WP-AC-02</span></div>
+                <div className="meta-grid">
+                  <div className="meta-item"><div className="k">Control Description</div><div className="v">Direct manager approval must be documented before privileged access is provisioned.</div></div>
+                  <div className="meta-item"><div className="k">Test Objective</div><div className="v">Determine whether selected privileged-access grants were supported by timely documented approval.</div></div>
+                  <div className="meta-item"><div className="k">Audit Period</div><div className="v">January 1 - June 30, 2025</div></div>
+                  <div className="meta-item"><div className="k">Testing Date</div><div className="v">July 12, 2025</div></div>
+                  <div className="meta-item"><div className="k">Evidence Obtained</div><div className="v">Privileged-access request population, approval evidence, request timestamps, and provisioning timestamps.</div></div>
+                  <div className="meta-item"><div className="k">Procedure</div><div className="v">Validate population reliability, select risk-based items, inspect approval evidence, compare approval to provisioning timestamps, and document exceptions.</div></div>
+                </div>
+
+                <div className="field"><div className="label">Control ID</div><div className="value">AC-05</div></div>
+                <div className="field"><div className="label">Population</div><div className="value">34 privileged-access grants during January 1 - June 30, 2025.</div></div>
+                <div className="field">
+                  <div className="label">Representative Synthetic Evidence Excerpt</div>
+                  <div className="value">
+                    <button className="action-link" onClick={() => setOpenEvidence("Privileged_Access_Requests.csv")}>View Privileged_Access_Requests.csv excerpt</button>
+                    {openEvidence === "Privileged_Access_Requests.csv" && evidenceViewer("Privileged_Access_Requests.csv")}
+                    <div style={{marginTop:"8px", fontSize:"11px", color:"#6e7681"}}>Excerpt only. The workpaper population and sample sizes represent the simulated full population used for the case study.</div>
+                  </div>
+                </div>
+
+                <div className="field"><div className="label">Population Completeness</div><div className="value">Obtained the privileged-access grant population from the access-request system for the audit period and reconciled the total count of 34 requests to monthly privileged-access activity summaries.</div></div>
+                <div className="field"><div className="label">Population Accuracy</div><div className="value">Selected 3 records and agreed request ID, user, requested role, manager approval timestamp, and provisioning timestamp to the underlying request documentation. No discrepancies noted.</div></div>
+                <div className="field"><div className="label">Sampling Approach</div><div className="value">Non-statistical, risk-based selection of 15 items for this simulated engagement. Selections were distributed across the six-month audit period and included all highest-risk administrative roles. The sample size is illustrative and does not represent a firm-specific audit sampling methodology.</div></div>
+                <div className="field"><div className="label">Attributes</div>
+                  <table><thead><tr><th>Attribute</th><th>Test</th></tr></thead><tbody>
+                    <tr><td>A</td><td>Access request exists</td></tr>
+                    <tr><td>B</td><td>Manager approval is documented</td></tr>
+                    <tr><td>C</td><td>Approval predates provisioning</td></tr>
+                    <tr><td>D</td><td>Approval evidence is retained</td></tr>
+                  </tbody></table>
+                </div>
+                <div className="field"><div className="label">Result</div><div className="value">2 of 15 selections (13.3%) were exceptions. One approval was documented two days after provisioning. One request lacked documented approval before provisioning and received verbal approval three days later.</div></div>
+                <div className="field"><div className="label">Conclusion</div><div className="value"><strong style={{color:"#f85149"}}>Not operating effectively.</strong> The control did not consistently enforce pre-provisioning approval.</div></div>
+              </div>
+
+              <div className="wp" id="wp-ac03">
+                <div className="wp-head"><strong>Quarterly User Access Review Testing</strong><span className="ref">WP-AC-03</span></div>
+                <div className="meta-grid">
+                  <div className="meta-item"><div className="k">Control Description</div><div className="v">System owners review complete user-access listings quarterly and track identified removals to completion.</div></div>
+                  <div className="meta-item"><div className="k">Test Objective</div><div className="v">Determine whether quarterly access reviews were complete, appropriately performed, evidenced, and remediated timely.</div></div>
+                  <div className="meta-item"><div className="k">Audit Period</div><div className="v">Q1 and Q2 2025</div></div>
+                  <div className="meta-item"><div className="k">Testing Date</div><div className="v">July 15, 2025</div></div>
+                  <div className="meta-item"><div className="k">Evidence Obtained</div><div className="v">System-user review listings, reviewer sign-off, identified removal logs, and remediation tracking records.</div></div>
+                  <div className="meta-item"><div className="k">Procedure</div><div className="v">Validate report reliability, inspect reviewer appropriateness, confirm privileged-access consideration, and verify identified removals were tracked to completion.</div></div>
+                </div>
+
+                <div className="field"><div className="label">Control ID</div><div className="value">AC-07</div></div>
+                <div className="field"><div className="label">Population</div><div className="value">6 quarterly access-review events: Q1 and Q2 reviews for GitHub, Google Workspace, and AWS.</div></div>
+                <div className="field">
+                  <div className="label">Representative Synthetic Evidence Excerpt</div>
+                  <div className="value">
+                    <button className="action-link" onClick={() => setOpenEvidence("Quarterly_Access_Review.csv")}>View Quarterly_Access_Review.csv excerpt</button>
+                    {openEvidence === "Quarterly_Access_Review.csv" && evidenceViewer("Quarterly_Access_Review.csv")}
+                    <div style={{marginTop:"8px", fontSize:"11px", color:"#6e7681"}}>Representative excerpt of the six simulated review events described in this workpaper.</div>
+                  </div>
+                </div>
+
+                <div className="field"><div className="label">Report Reliability / Completeness</div><div className="value">For each system, validated that the review listing was generated from the system of record using the active-user population parameters applicable to the review date. Reconciled report record counts to independently generated system-user summaries and inspected selected users to underlying account records.</div></div>
+                <div className="field"><div className="label">Report Accuracy</div><div className="value">For selected users across each system, agreed user identity, status, assigned role, and privileged-access indicator from the review listing to the underlying system account record. No discrepancies noted.</div></div>
+                <div className="field"><div className="label">Testing Approach</div><div className="value">Full-population testing of all six review events because the control-event population was small and discrete.</div></div>
+                <div className="field"><div className="label">Attributes</div>
+                  <table><thead><tr><th>Attribute</th><th>Test</th></tr></thead><tbody>
+                    <tr><td>A</td><td>Review used a complete and reliable system-user population</td></tr>
+                    <tr><td>B</td><td>Appropriate system owner performed and evidenced the review</td></tr>
+                    <tr><td>C</td><td>Privileged access was specifically considered</td></tr>
+                    <tr><td>D</td><td>Reviewer decisions and identified removals were documented</td></tr>
+                    <tr><td>E</td><td>Identified removals were tracked to completion within the defined remediation period</td></tr>
+                  </tbody></table>
+                </div>
+                <div className="field"><div className="label">Results</div><div className="value">All 6 reviews were completed by the appropriate system owner using complete and reliable user listings. Across the six reviews, 11 access-removal items were identified and all 11 were completed within the required 10-business-day remediation window.</div></div>
+                <div className="field"><div className="label">Conclusion</div><div className="value"><strong style={{color:"#3fb950"}}>Operating effectively.</strong> No exceptions were identified in the six review events tested.</div></div>
+              </div>
+            </section>
+
+            <section className="case-section" id="case-findings">
+              <h3>8. Audit Findings</h3>
+
+              <div className="finding" id="finding-01">
+                <h4>FINDING #1 - Delayed Termination Access Removal</h4>
+                <div className="field"><div className="label">Risk Rating</div><div className="value"><span className="badge high">High</span></div></div>
+                <div className="field"><div className="label">Condition</div><div className="value">3 of 127 terminated employees retained at least one in-scope account beyond the required 24-hour deprovisioning threshold. The longest resolved delay was 96 hours; one account remained active as of the testing date.</div></div>
+                <div className="field"><div className="label">Criteria</div><div className="value">Company Access Control Standard v2.1, effective January 1, 2025, requires all in-scope access to be disabled within 24 hours of the employee's effective termination time.</div></div>
+                <div className="field"><div className="label">Cause</div><div className="value">The process relies on manual email communication from HR to IAM and lacks an independent completeness control to identify missed or delayed termination events.</div></div>
+                <div className="field"><div className="label">Risk</div><div className="value">Former employees may retain unauthorized access to company systems and sensitive information.</div></div>
+                <div className="field"><div className="label">Audit Recommendation</div><div className="value">Management should establish a formal mechanism that ensures termination events are completely and timely communicated to IAM and independently verifies that terminated users are removed from all in-scope systems within the required timeframe.</div></div>
+                <div className="field"><div className="label">Potential Remediation Approaches</div><div className="value">HR-to-IAM integration, daily reconciliation of active accounts to the authoritative employee population, and monitored exception alerts are possible management responses.</div></div>
+                <div className="field"><div className="label">Simulated Management Response</div><div className="value">Accepted. HR and IT committed to implementing automated termination-event transmission and a daily reconciliation control by September 30, 2025.</div></div>
+              </div>
+
+              <div className="finding" id="finding-02">
+                <h4>FINDING #2 - Privileged Access Pre-Approval Not Enforced</h4>
+                <div className="field"><div className="label">Risk Rating</div><div className="value"><span className="badge medium">Medium</span></div></div>
+                <div className="field"><div className="label">Condition</div><div className="value">2 of 15 privileged-access grants tested (13.3%) were provisioned before documented manager approval was obtained.</div></div>
+                <div className="field"><div className="label">Criteria</div><div className="value">Company policy requires documented direct-manager approval before privileged access is provisioned.</div></div>
+                <div className="field"><div className="label">Cause</div><div className="value">Approval is performed outside the provisioning workflow, so no technical control prevents provisioning before approval.</div></div>
+                <div className="field"><div className="label">Risk</div><div className="value">Privileged access may be granted without appropriate authorization, increasing the risk of unauthorized changes or sensitive-data access.</div></div>
+                <div className="field"><div className="label">Audit Recommendation</div><div className="value">Management should implement a workflow control that prevents privileged access from being provisioned until required approval is documented.</div></div>
+                <div className="field"><div className="label">Simulated Management Response</div><div className="value">Accepted. IT committed to implementing workflow-based approval gating by September 30, 2025.</div></div>
+              </div>
+            </section>
+
+            <section className="case-section" id="case-remediation">
+              <h3>9. Remediation & Retesting</h3>
+
+              <div className="wp">
+                <div className="wp-head"><strong>Finding #1 Retest</strong><span className="ref">WP-AC-01-RT</span></div>
+                <div className="field"><div className="label">Implementation</div><div className="value">September 15, 2025: automated termination-event transmission and daily active-user reconciliation implemented.</div></div>
+                <div className="field"><div className="label">Retest</div><div className="value">38 termination events from September 15 - October 15, 2025; full-population testing.</div></div>
+                <div className="field"><div className="label">Result</div><div className="value">0 of 38 exceptions. Average deprovisioning time: 1.8 hours.</div></div>
+                <div className="field"><div className="label">Conclusion</div><div className="value"><span className="badge effective">Remediated</span> The revised control operated effectively for the retest period.</div></div>
+              </div>
+
+              <div className="wp">
+                <div className="wp-head"><strong>Finding #2 Retest</strong><span className="ref">WP-AC-02-RT</span></div>
+                <div className="field"><div className="label">Implementation</div><div className="value">September 30, 2025: service-management workflow configured to gate privileged provisioning on documented manager approval.</div></div>
+                <div className="field"><div className="label">Retest</div><div className="value">10 post-implementation privileged-access grants selected judgmentally.</div></div>
+                <div className="field"><div className="label">Result</div><div className="value">0 of 10 exceptions. All approval timestamps preceded provisioning timestamps.</div></div>
+                <div className="field"><div className="label">Conclusion</div><div className="value"><span className="badge effective">Remediated</span> The revised control operated effectively for the retest selections.</div></div>
+              </div>
+            </section>
+
+            <section className="case-section" id="case-conclusion">
+              <h3>10. Engagement Conclusion</h3>
+              <p>
+                For the three logical-access controls included in this simulated engagement, AC-03 and AC-05 contained
+                design deficiencies and did not operate effectively during the January 1 - June 30, 2025 audit period.
+                AC-07 was appropriately designed and operated effectively for all six quarterly review events tested.
+              </p>
+              <p style={{marginTop:"14px"}}>
+                Two findings were issued: one High and one Medium. Simulated remediation for AC-03 and AC-05 was retested
+                in October 2025 and no exceptions were identified in the defined retest populations/selections.
+              </p>
+              <p style={{marginTop:"14px"}}>
+                <strong style={{color:"#c9d1d9"}}>Scope limitation:</strong> This conclusion is limited to the controls and periods tested
+                and is not an opinion on the hypothetical organization's entire logical-access environment.
+              </p>
+            </section>
+              </article>
+            </div>
+          </div>
+        </main>
+      );
+
+      const About = () => (
+        <main className="section">
+          <div className="container">
+            <div className="about-layout">
+              <aside className="about-intro">
+                <span className="eyebrow">About the project</span>
+                <h2 className="section-title">Technology Risk & Audit Project</h2>
+                <p>
+                  A simulated audit portfolio and browser-based access-review tool designed to demonstrate practical technology-risk and IT-audit methodology.
+                </p>
+              </aside>
+              <div className="about-content">
+<section className="about-section"><h3>Purpose</h3>
+              <p>This is a simulated technology risk and IT audit engagement using synthetic data. It demonstrates practical application of audit universe assessment, risk-based audit planning, control design evaluation, evidence reliability considerations, operating-effectiveness testing, workpaper documentation, findings development, and remediation retesting.</p></section>
+<section className="about-section"><h3>My Role</h3>
+              <ul>
+                <li>Assessed the audit universe and used a risk-based rationale to determine planned coverage and select the engagement scope.</li>
+                <li>Defined the engagement objective, scope, and selected logical-access controls.</li>
+                <li>Documented the user-access lifecycle and identified key risks.</li>
+                <li>Built the Risk & Control Matrix.</li>
+                <li>Evaluated control design, including completeness and workflow-enforcement considerations.</li>
+                <li>Designed full-population and non-statistical, risk-based sample procedures.</li>
+                <li>Evaluated population completeness, accuracy, and report reliability before relying on evidence.</li>
+                <li>Documented workpapers, exceptions, conclusions, findings, and simulated remediation retesting.</li>
+                <li>Built a browser-based access-analysis utility to connect data exceptions to audit procedures, including terminated-user access, deprovisioning timeliness, unmatched active accounts, privileged-access approval timing, dormancy, and role mismatches.</li>
+              </ul></section>
+<section className="about-section"><h3>Methodology Alignment</h3>
+              <p style={{fontSize:"12px", color:"#6e7681", marginBottom:"16px"}}>
+                This project applies audit concepts aligned with the following CISA exam domains. It is not affiliated
+                with, endorsed by, or certified by ISACA.
+              </p>
+              <h4>CISA Domain 1 — Information System Auditing Process</h4>
+              <p>Risk-based audit planning, audit testing and sampling, evidence collection, data analytics, reporting, and follow-up.</p>
+              <h4>CISA Domain 2 — Governance and Management of IT</h4>
+              <p>IT-related risk identification, governance considerations, control ownership, prioritization, and monitoring.</p></section>
+<section className="about-section"><h3>Product + Methodology</h3>
+              <p>The tool and case study serve different purposes. The Access Analysis Tool performs practical reconciliation, exception detection, evidence-quality assessment, control-level summarization, and downloadable reporting on user-selected CSV files. The Case Study is a fixed synthetic example demonstrating how an auditor plans an engagement, evaluates evidence, tests controls, reaches conclusions, develops findings, and retests remediation.</p></section>
+<section className="about-section"><h3>Technologies & Methods</h3>
+              <p><strong style={{color:"#c9d1d9"}}>Development:</strong> JavaScript, React, HTML/CSS, browser-based CSV parsing, client-side PDF generation</p>
+              <p style={{marginTop:"8px"}}><strong style={{color:"#c9d1d9"}}>Analysis:</strong> reconciliation, duplicate-ID validation, row-level evidence-quality checks, configurable review criteria, population testing, exception detection, pre-provisioning approval-timestamp testing, deprovisioning-timeliness analysis, framework crosswalks, exception export</p>
+              <p style={{marginTop:"8px"}}><strong style={{color:"#c9d1d9"}}>Audit Methods:</strong> audit universe assessment, risk-based planning, planned coverage, Risk & Control Matrix, evidence reliability, control design assessment, operating-effectiveness testing, workpapers, findings, remediation retesting</p></section>
+<section className="about-section"><h3>Technical Scope & Limitations</h3>
+              <ul>
+                <li><strong style={{color:"#c9d1d9"}}>Client-side prototype:</strong> ControlProof is a browser-based portfolio tool designed for modern browsers. It does not include a backend, persistent database, user authentication, or enterprise deployment controls.</li>
+                <li><strong style={{color:"#c9d1d9"}}>CDN dependency:</strong> React, Babel, and jsPDF are loaded from public CDNs, so an internet connection is required when the page first loads and when PDF functionality is initialized.</li>
+                <li><strong style={{color:"#c9d1d9"}}>Framework crosswalk:</strong> SOX ITGC, SOC 2, NIST CSF 2.0, and ISO/IEC 27001 mappings are illustrative references for technology-risk analysis and are not compliance determinations or attestation conclusions.</li>
+                <li><strong style={{color:"#c9d1d9"}}>Portfolio scope:</strong> The tool is intended to demonstrate access-review logic, control testing concepts, exception analysis, and reporting. It is not represented as a production-grade enterprise audit or GRC platform.</li>
+              </ul></section>
+<section className="about-section"><h3>What This Is Not</h3>
+              <ul>
+                <li>Not a real customer audit.</li>
+                <li>Not an assessment of an actual organization.</li>
+                <li>This project is a simulated portfolio exercise and does not represent client or employer audit work.</li>
+                <li>The sampling approach is illustrative and does not claim to reproduce any firm's proprietary audit methodology.</li>
+                <li>All case-study organizations, identities, evidence, findings, management responses, and remediation results are synthetic.</li>
+              </ul></section>
+              </div>
+            </div>
+          </div>
+        </main>
+      );
+
+      return <>
+        <header>
+          <div className="container">
+            <div className="brand-block">
+              <div className="brand-copy">
+                <p>Technology Risk, Controls & Access Review</p>
+              </div>
+            </div>
+            <nav>
+              <button className={tab==="home" ? "active" : ""} onClick={() => setTab("home")}>Overview</button>
+              <button className={tab==="tool" ? "active" : ""} onClick={() => setTab("tool")}>Access Review</button>
+              <button className={tab==="case" ? "active" : ""} onClick={() => setTab("case")}>Audit Case Study</button>
+              <button className={tab==="about" ? "active" : ""} onClick={() => setTab("about")}>About</button>
+            </nav>
+          </div>
+        </header>
+        <div className="portfolio-note">
+          <div className="container"><strong>Portfolio project.</strong> The Audit Case Study uses synthetic data. Files selected in the Access Analysis Tool are processed locally in your browser and are not uploaded to a server.</div>
+        </div>
+
+        {tab==="home" && <Home />}
+        {tab==="tool" && <Tool />}
+        {tab==="case" && <CaseStudy />}
+        {tab==="about" && <About />}
+
+        <footer>
+          <div className="container">Simulated technology risk and IT audit portfolio project</div>
+        </footer>
+      </>;
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<ControlProof />);
+  </script>
+</body>
+</html>
