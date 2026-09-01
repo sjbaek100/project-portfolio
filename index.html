@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Technology Risk, Controls & Access Review</title>
+  <title>Technology Risk & Controls Assessment</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -158,6 +158,43 @@ button:disabled{opacity:.42;cursor:not-allowed}
 .snapshot-row span:first-child{font-size:11.5px;color:var(--muted)}
 .snapshot-row strong{font-size:13px;color:var(--ink);font-weight:700}
 .home-divider{height:1px;background:var(--line);margin:30px 0 30px}
+.overview-context{
+  display:grid;
+  grid-template-columns:1fr 1.35fr 1fr;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:#fff;
+  overflow:hidden;
+  margin-bottom:18px;
+}
+.context-item{
+  padding:15px 17px;
+}
+.context-item+.context-item{
+  border-left:1px solid var(--line);
+}
+.context-label{
+  display:block;
+  margin-bottom:5px;
+  font-size:8.8px;
+  font-weight:700;
+  letter-spacing:.08em;
+  color:var(--accent);
+  text-transform:uppercase;
+}
+.context-item strong{
+  display:block;
+  margin-bottom:4px;
+  color:var(--ink);
+  font-family:'Source Serif 4',Georgia,serif;
+  font-size:14px;
+  font-weight:500;
+}
+.context-item p{
+  color:var(--muted);
+  font-size:10.6px;
+  line-height:1.48;
+}
 .home-capabilities{
   display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
   border-top:1px solid var(--line);border-bottom:1px solid var(--line)
@@ -574,6 +611,43 @@ details.schema-details summary{cursor:pointer;font-size:10.8px;font-weight:650;c
   font-family:'Source Serif 4',Georgia,serif;font-size:16px;font-weight:500;color:var(--ink);margin-bottom:9px
 }
 .secondary-panel p{font-size:10.3px;color:var(--muted);line-height:1.55}
+.sql-tests{margin-top:18px}
+.sql-test-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:12px
+}
+.sql-card{
+  background:#fbfaf8;
+  border:1px solid var(--line);
+  border-radius:5px;
+  overflow:hidden
+}
+.sql-card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:10px 11px;
+  border-bottom:1px solid var(--line);
+  background:#fff
+}
+.sql-card-head strong{font-size:10.5px;color:var(--ink-2);font-weight:650}
+.sql-code{
+  margin:0;
+  padding:12px;
+  overflow-x:auto;
+  background:#f7f6f3;
+  color:#344054;
+  font:9.4px/1.55 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  white-space:pre
+}
+.sql-note{
+  margin-top:9px!important;
+  font-size:9.6px!important;
+  color:var(--muted-2)!important
+}
 .summary-block{background:#fff;border:1px solid var(--line);border-radius:6px;padding:18px}
 .summary-block .wp{border:0;background:transparent;padding:0;margin:0 0 17px}
 .summary-block .wp-head{padding-bottom:10px;margin-bottom:11px;border-bottom:1px solid var(--line)}
@@ -624,9 +698,17 @@ td{color:var(--muted);line-height:1.55}
 }
 .case-nav button{
   width:100%;text-align:left;border:0;background:transparent;color:var(--muted);
-  font-size:10.8px;padding:7px 8px;border-radius:4px
+  font-size:10.8px;padding:7px 8px;border-radius:4px;
+  transition:background .18s ease,color .18s ease,box-shadow .18s ease
 }
 .case-nav button:hover{background:#fff;color:var(--accent)}
+.case-nav button.active{
+  background:var(--accent-soft);
+  color:var(--accent);
+  font-weight:700;
+  box-shadow:inset 3px 0 0 var(--accent)
+}
+.case-section[id]{scroll-margin-top:118px}
 .case-document{
   background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:40px 44px;
   box-shadow:none
@@ -720,65 +802,74 @@ footer{
 /* ---------- v28 overview fit + result action placement ---------- */
 @media(min-width:981px){
   .overview-section{
-    padding:20px 0 24px;
-    min-height:calc(100vh - 112px);
+    padding:34px 0 46px;
   }
   .home-shell{
-    gap:34px;
+    gap:40px;
     align-items:center;
   }
   .home-main{
-    padding:18px 0 4px;
+    padding:18px 0 8px;
   }
   .hero-title{
-    font-size:clamp(38px,4.2vw,54px);
-    line-height:1.03;
+    font-size:clamp(40px,4.2vw,56px);
+    line-height:1.04;
   }
   .hero-sub{
-    margin-top:14px;
+    margin-top:16px;
     font-size:14px;
     line-height:1.65;
   }
   .credential-line{
-    margin-top:14px;
+    margin-top:16px;
   }
   .home-actions{
-    margin-top:18px;
+    margin-top:20px;
   }
   .home-aside{
-    padding:18px 20px;
+    padding:20px 22px;
   }
   .how-aside h3{
-    margin-bottom:8px;
+    margin-bottom:10px;
   }
   .how-aside-step{
-    padding:8px 0;
+    padding:9px 0;
   }
   .how-aside-step p{
-    line-height:1.42;
+    line-height:1.46;
   }
   .home-divider{
-    margin:20px 0 18px;
+    margin:26px 0 22px;
+  }
+  .overview-context{
+    margin-bottom:22px;
+  }
+  .context-item{
+    padding:15px 17px;
+  }
+  .context-item p{
+    font-size:10.6px;
+    line-height:1.48;
   }
   .capability{
-    padding:16px 20px 16px 0;
+    padding:20px 22px 20px 0;
   }
   .capability+.capability{
-    padding-left:20px;
+    padding-left:22px;
   }
   .capability .step-tag{
-    margin-bottom:5px;
+    margin-bottom:6px;
   }
   .capability h4{
-    margin-bottom:4px;
+    margin-bottom:5px;
     font-size:16px;
   }
   .capability p{
     font-size:11.3px;
-    line-height:1.5;
+    line-height:1.55;
   }
   .flow-summary{
-    margin-top:15px;
+    margin-top:20px;
   }
 }
 
@@ -823,6 +914,11 @@ footer{
   .case-nav{display:flex;gap:4px;overflow-x:auto;padding-bottom:8px}
   .case-nav .case-nav-title{display:none}
   .case-nav button{width:auto;white-space:nowrap;background:#fff;border:1px solid var(--line)}
+  .case-nav button.active{
+    box-shadow:inset 0 -3px 0 var(--accent);
+    border-color:var(--accent);
+    background:var(--accent-soft)
+  }
   .flow{grid-template-columns:repeat(4,1fr)}
 }
 @media(max-width:760px){
@@ -850,6 +946,8 @@ footer{
   .home-main{padding-top:10px}
   .hero-title{font-size:42px}
   .home-capabilities{grid-template-columns:1fr}
+  .overview-context{grid-template-columns:1fr}
+  .context-item+.context-item{border-left:0;border-top:1px solid var(--line)}
   .capability,.capability+.capability{padding:18px 0;border-left:0;border-top:1px solid var(--line)}
   .capability:first-child{border-top:0}
   .workbench-header{flex-direction:column}
@@ -865,6 +963,7 @@ footer{
   .meta-grid{grid-template-columns:1fr}
   .flow{grid-template-columns:1fr 1fr}
   .table-shell{display:block;overflow-x:auto}
+  .sql-test-grid{grid-template-columns:1fr}
   table{min-width:680px}
 }
 @media(max-width:460px){
@@ -1011,7 +1110,7 @@ footer{
       return `"${s.replace(/"/g, '""')}"`;
     };
 
-    function ControlProof() {
+    function TechnologyRiskAssessmentApp() {
       const [tab, setTab] = React.useState("home");
       const [employeeFile, setEmployeeFile] = React.useState(null);
       const [accessFile, setAccessFile] = React.useState(null);
@@ -1024,6 +1123,7 @@ footer{
       const accessInputRef = React.useRef(null);
       const analysisSourceRef = React.useRef(null);
       const [pendingAnchor, setPendingAnchor] = React.useState(null);
+      const [activeCaseSection, setActiveCaseSection] = React.useState("case-planning");
       const [criteria, setCriteria] = React.useState({
         deprovisionHours: 24,
         dormantDays: 90,
@@ -1063,6 +1163,67 @@ footer{
           setPendingAnchor(null);
         }
       }, [tab, pendingAnchor]);
+
+      React.useEffect(() => {
+        if (tab !== "case") return;
+
+        const sectionIds = [
+          "case-planning",
+          "case-risk",
+          "case-rcm",
+          "case-testing",
+          "case-findings",
+          "case-remediation",
+          "case-conclusion"
+        ];
+
+        let frame = null;
+
+        const updateActiveCaseSection = () => {
+          if (frame) cancelAnimationFrame(frame);
+          frame = requestAnimationFrame(() => {
+            const marker = 150;
+            let current = sectionIds[0];
+
+            for (const id of sectionIds) {
+              const el = document.getElementById(id);
+              if (!el) continue;
+              if (el.getBoundingClientRect().top <= marker) {
+                current = id;
+              } else {
+                break;
+              }
+            }
+
+            if (
+              window.innerHeight + window.scrollY >=
+              document.documentElement.scrollHeight - 4
+            ) {
+              current = sectionIds[sectionIds.length - 1];
+            }
+
+            setActiveCaseSection(prev => prev === current ? prev : current);
+          });
+        };
+
+        updateActiveCaseSection();
+        window.addEventListener("scroll", updateActiveCaseSection, { passive: true });
+        window.addEventListener("resize", updateActiveCaseSection);
+
+        return () => {
+          if (frame) cancelAnimationFrame(frame);
+          window.removeEventListener("scroll", updateActiveCaseSection);
+          window.removeEventListener("resize", updateActiveCaseSection);
+        };
+      }, [tab]);
+
+      const scrollToCaseSection = (id) => {
+        setActiveCaseSection(id);
+        document.getElementById(id)?.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      };
 
       React.useEffect(() => {
         if (tab !== "tool" || !results || !analysisSourceRef.current) return;
@@ -1742,7 +1903,7 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
           doc.setFont("helvetica", "normal");
           doc.setFontSize(8);
           doc.setTextColor(105);
-          doc.text("ControlProof - Access Analysis Report", margin, footerY);
+          doc.text("Technology Risk & Controls Assessment - Access Analysis Report", margin, footerY);
           doc.text(`Page ${doc.getNumberOfPages()}`, pageWidth - margin, footerY, { align: "right" });
         };
 
@@ -1804,7 +1965,7 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
         doc.setFont("helvetica", "bold");
         doc.setFontSize(21);
         doc.setTextColor(20);
-        doc.text("ControlProof", margin, y);
+        doc.text("Technology Risk & Controls Assessment", margin, y);
         y += 25;
 
         doc.setFont("helvetica", "normal");
@@ -1918,7 +2079,7 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
 
         addHeading("Privacy", 11);
         addBody(
-          "The selected CSV files are processed locally in the browser. ControlProof does not upload the files to a server.",
+          "The selected CSV files are processed locally in the browser and are not uploaded to a server.",
           { size: 8.7, color: 90 }
         );
 
@@ -1965,7 +2126,7 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
           doc.setFont("helvetica", "normal");
           doc.setFontSize(8.5);
           doc.setTextColor(100);
-          doc.text("Simulated technology risk and IT audit portfolio project", margin, footerY);
+          doc.text("Technology Risk & Controls Assessment - simulated portfolio project", margin, footerY);
           doc.text(`Page ${doc.getNumberOfPages()}`, pageWidth - margin, footerY, { align: "right" });
         };
 
@@ -2023,7 +2184,7 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
         doc.setFont("helvetica", "bold");
         doc.setFontSize(22);
         doc.setTextColor(20);
-        doc.text("ControlProof", margin, y);
+        doc.text("Technology Risk & Controls Assessment", margin, y);
         y += 27;
 
         doc.setFont("helvetica", "normal");
@@ -2118,7 +2279,7 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
           );
         }
 
-        doc.save("ControlProof_Audit_Summary.pdf");
+        doc.save("Technology_Risk_Controls_Assessment_Audit_Summary.pdf");
       };
 
       const Home = () => (
@@ -2177,6 +2338,35 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
 
             <div className="home-divider"></div>
 
+            <div className="overview-context">
+              <div className="context-item">
+                <span className="context-label">Purpose</span>
+                <strong>End-to-End Access Review</strong>
+                <p>
+                  Demonstrates a logical-access audit from risk-based scoping and control design through testing,
+                  exception analysis, findings, and remediation.
+                </p>
+              </div>
+
+              <div className="context-item">
+                <span className="context-label">What I Built</span>
+                <strong>Case Study + Working Analyzer</strong>
+                <p>
+                  Includes a fixed audit case study, a browser-based CSV access review tool, and representative SQL
+                  test procedures for employee-to-access reconciliation and logical-access testing.
+                </p>
+              </div>
+
+              <div className="context-item">
+                <span className="context-label">Scope</span>
+                <strong>Simulated Portfolio Exercise</strong>
+                <p>
+                  Uses synthetic case-study data and does not represent client or employer audit work.
+                  Framework mappings are illustrative, not compliance or attestation conclusions.
+                </p>
+              </div>
+            </div>
+
             <div className="home-capabilities">
               <div className="capability">
                 <div className="step-tag">PLANNING</div>
@@ -2190,8 +2380,8 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
               </div>
               <div className="capability">
                 <div className="step-tag">TOOLING</div>
-                <h4>Automation</h4>
-                <p>Browser-based access review, reconciliation, and exception detection.</p>
+                <h4>Automation & SQL</h4>
+                <p>Browser-based access review, SQL test procedures, reconciliation, and exception detection.</p>
               </div>
             </div>
 
@@ -2457,7 +2647,7 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
                         <div className="table-shell" style={{marginTop:"12px"}}>
                           <table>
                             <thead>
-                              <tr><th>ControlProof Control</th><th>SOX ITGC</th><th>SOC 2 Trust Services Criteria</th><th>NIST CSF 2.0</th><th>ISO/IEC 27001:2022</th></tr>
+                              <tr><th>Assessment Control</th><th>SOX ITGC</th><th>SOC 2 Trust Services Criteria</th><th>NIST CSF 2.0</th><th>ISO/IEC 27001:2022</th></tr>
                             </thead>
                             <tbody>
                               {["AC-03","AC-05","AC-07"].map(controlId => {
@@ -2481,6 +2671,90 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
                         </div>
                         <p style={{marginTop:"9px", fontSize:"10px", color:"#98a2b3"}}>
                           SOX ITGC does not prescribe one universal control-number taxonomy; the mapping uses common Logical Access control categories.
+                        </p>
+                      </div>
+
+                      <div className="secondary-panel sql-tests">
+                        <h3>Representative SQL Test Procedures</h3>
+                        <p>
+                          PostgreSQL-style examples show how selected logical-access tests could be executed against normalized
+                          employee and access tables. The live analyzer remains client-side and does not connect to a database.
+                        </p>
+
+                        <div className="sql-test-grid">
+                          <div className="sql-card">
+                            <div className="sql-card-head">
+                              <strong>Terminated Users With Active Access</strong>
+                              <span className="badge blue">AC-03</span>
+                            </div>
+                            <pre className="sql-code"><code>{`SELECT e.employee_id,
+       e.employee_name,
+       a.account,
+       a.system
+FROM employee_roster e
+JOIN access_export a
+  ON a.employee_id = e.employee_id
+WHERE LOWER(e.employment_status) = 'terminated'
+  AND e.termination_date <= CURRENT_TIMESTAMP
+  AND LOWER(a.access_status) = 'active';`}</code></pre>
+                          </div>
+
+                          <div className="sql-card">
+                            <div className="sql-card-head">
+                              <strong>Late Deprovisioning</strong>
+                              <span className="badge blue">AC-03</span>
+                            </div>
+                            <pre className="sql-code"><code>{`SELECT e.employee_id,
+       a.account,
+       a.system,
+       e.termination_date,
+       a.deactivation_date
+FROM employee_roster e
+JOIN access_export a
+  ON a.employee_id = e.employee_id
+WHERE e.termination_date IS NOT NULL
+  AND a.deactivation_date IS NOT NULL
+  AND a.deactivation_date >
+      e.termination_date + INTERVAL '24 hours';`}</code></pre>
+                          </div>
+
+                          <div className="sql-card">
+                            <div className="sql-card-head">
+                              <strong>Unmatched Active Accounts</strong>
+                              <span className="badge blue">AC-07</span>
+                            </div>
+                            <pre className="sql-code"><code>{`SELECT a.employee_id,
+       a.account,
+       a.system
+FROM access_export a
+LEFT JOIN employee_roster e
+  ON e.employee_id = a.employee_id
+WHERE e.employee_id IS NULL
+  AND LOWER(a.access_status) = 'active';`}</code></pre>
+                          </div>
+
+                          <div className="sql-card">
+                            <div className="sql-card-head">
+                              <strong>Privileged Access Approval Timing</strong>
+                              <span className="badge blue">AC-05</span>
+                            </div>
+                            <pre className="sql-code"><code>{`SELECT a.employee_id,
+       a.account,
+       a.system,
+       a.approval_timestamp,
+       a.provisioned_timestamp
+FROM access_export a
+WHERE a.is_privileged = TRUE
+  AND (
+    a.approval_timestamp IS NULL
+    OR a.approval_timestamp > a.provisioned_timestamp
+  );`}</code></pre>
+                          </div>
+                        </div>
+
+                        <p className="sql-note">
+                          These queries are illustrative test procedures and mirror selected rules in the browser-based analyzer;
+                          table and field names represent a normalized audit-data model.
                         </p>
                       </div>
                     </div>
@@ -2550,13 +2824,13 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
             <div className="case-layout">
               <aside className="case-nav">
                 <div className="case-nav-title">Case study</div>
-                <button onClick={() => document.getElementById("case-planning")?.scrollIntoView({behavior:"smooth"})}>01 Planning</button>
-                <button onClick={() => document.getElementById("case-risk")?.scrollIntoView({behavior:"smooth"})}>02 Risk Assessment</button>
-                <button onClick={() => document.getElementById("case-rcm")?.scrollIntoView({behavior:"smooth"})}>03 Risk & Control Matrix</button>
-                <button onClick={() => document.getElementById("case-testing")?.scrollIntoView({behavior:"smooth"})}>04 Testing</button>
-                <button onClick={() => document.getElementById("case-findings")?.scrollIntoView({behavior:"smooth"})}>05 Findings</button>
-                <button onClick={() => document.getElementById("case-remediation")?.scrollIntoView({behavior:"smooth"})}>06 Remediation</button>
-                <button onClick={() => document.getElementById("case-conclusion")?.scrollIntoView({behavior:"smooth"})}>07 Conclusion</button>
+                <button className={activeCaseSection==="case-planning" ? "active" : ""} onClick={() => scrollToCaseSection("case-planning")}>01 Planning</button>
+                <button className={activeCaseSection==="case-risk" ? "active" : ""} onClick={() => scrollToCaseSection("case-risk")}>02 Risk Assessment</button>
+                <button className={activeCaseSection==="case-rcm" ? "active" : ""} onClick={() => scrollToCaseSection("case-rcm")}>03 Risk & Control Matrix</button>
+                <button className={activeCaseSection==="case-testing" ? "active" : ""} onClick={() => scrollToCaseSection("case-testing")}>04 Testing</button>
+                <button className={activeCaseSection==="case-findings" ? "active" : ""} onClick={() => scrollToCaseSection("case-findings")}>05 Findings</button>
+                <button className={activeCaseSection==="case-remediation" ? "active" : ""} onClick={() => scrollToCaseSection("case-remediation")}>06 Remediation</button>
+                <button className={activeCaseSection==="case-conclusion" ? "active" : ""} onClick={() => scrollToCaseSection("case-conclusion")}>07 Conclusion</button>
               </aside>
 
               <article className="case-document">
@@ -2917,67 +3191,6 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
         </main>
       );
 
-      const About = () => (
-        <main className="section">
-          <div className="container">
-            <div className="about-layout">
-              <aside className="about-intro">
-                <span className="eyebrow">About the project</span>
-                <h2 className="section-title">Technology Risk & Audit Project</h2>
-                <p>
-                  A simulated audit portfolio and browser-based access-review tool designed to demonstrate practical technology-risk and IT-audit methodology.
-                </p>
-              </aside>
-              <div className="about-content">
-<section className="about-section"><h3>Purpose</h3>
-              <p>This is a simulated technology risk and IT audit engagement using synthetic data. It demonstrates practical application of audit universe assessment, risk-based audit planning, control design evaluation, evidence reliability considerations, operating-effectiveness testing, workpaper documentation, findings development, and remediation retesting.</p></section>
-<section className="about-section"><h3>My Role</h3>
-              <ul>
-                <li>Assessed the audit universe and used a risk-based rationale to determine planned coverage and select the engagement scope.</li>
-                <li>Defined the engagement objective, scope, and selected logical-access controls.</li>
-                <li>Documented the user-access lifecycle and identified key risks.</li>
-                <li>Built the Risk & Control Matrix.</li>
-                <li>Evaluated control design, including completeness and workflow-enforcement considerations.</li>
-                <li>Designed full-population and non-statistical, risk-based sample procedures.</li>
-                <li>Evaluated population completeness, accuracy, and report reliability before relying on evidence.</li>
-                <li>Documented workpapers, exceptions, conclusions, findings, and simulated remediation retesting.</li>
-                <li>Built a browser-based access-analysis utility to connect data exceptions to audit procedures, including terminated-user access, deprovisioning timeliness, unmatched active accounts, privileged-access approval timing, dormancy, and role mismatches.</li>
-              </ul></section>
-<section className="about-section"><h3>Methodology Alignment</h3>
-              <p style={{fontSize:"12px", color:"#6e7681", marginBottom:"16px"}}>
-                This project applies audit concepts aligned with the following CISA exam domains. It is not affiliated
-                with, endorsed by, or certified by ISACA.
-              </p>
-              <h4>CISA Domain 1 — Information System Auditing Process</h4>
-              <p>Risk-based audit planning, audit testing and sampling, evidence collection, data analytics, reporting, and follow-up.</p>
-              <h4>CISA Domain 2 — Governance and Management of IT</h4>
-              <p>IT-related risk identification, governance considerations, control ownership, prioritization, and monitoring.</p></section>
-<section className="about-section"><h3>Product + Methodology</h3>
-              <p>The tool and case study serve different purposes. The Access Analysis Tool performs practical reconciliation, exception detection, evidence-quality assessment, control-level summarization, and downloadable reporting on user-selected CSV files. The Case Study is a fixed synthetic example demonstrating how an auditor plans an engagement, evaluates evidence, tests controls, reaches conclusions, develops findings, and retests remediation.</p></section>
-<section className="about-section"><h3>Technologies & Methods</h3>
-              <p><strong style={{color:"#c9d1d9"}}>Development:</strong> JavaScript, React, HTML/CSS, browser-based CSV parsing, client-side PDF generation</p>
-              <p style={{marginTop:"8px"}}><strong style={{color:"#c9d1d9"}}>Analysis:</strong> reconciliation, duplicate-ID validation, row-level evidence-quality checks, configurable review criteria, population testing, exception detection, pre-provisioning approval-timestamp testing, deprovisioning-timeliness analysis, framework crosswalks, exception export</p>
-              <p style={{marginTop:"8px"}}><strong style={{color:"#c9d1d9"}}>Audit Methods:</strong> audit universe assessment, risk-based planning, planned coverage, Risk & Control Matrix, evidence reliability, control design assessment, operating-effectiveness testing, workpapers, findings, remediation retesting</p></section>
-<section className="about-section"><h3>Technical Scope & Limitations</h3>
-              <ul>
-                <li><strong style={{color:"#c9d1d9"}}>Client-side prototype:</strong> ControlProof is a browser-based portfolio tool designed for modern browsers. It does not include a backend, persistent database, user authentication, or enterprise deployment controls.</li>
-                <li><strong style={{color:"#c9d1d9"}}>CDN dependency:</strong> React, Babel, and jsPDF are loaded from public CDNs, so an internet connection is required when the page first loads and when PDF functionality is initialized.</li>
-                <li><strong style={{color:"#c9d1d9"}}>Framework crosswalk:</strong> SOX ITGC, SOC 2, NIST CSF 2.0, and ISO/IEC 27001 mappings are illustrative references for technology-risk analysis and are not compliance determinations or attestation conclusions.</li>
-                <li><strong style={{color:"#c9d1d9"}}>Portfolio scope:</strong> The tool is intended to demonstrate access-review logic, control testing concepts, exception analysis, and reporting. It is not represented as a production-grade enterprise audit or GRC platform.</li>
-              </ul></section>
-<section className="about-section"><h3>What This Is Not</h3>
-              <ul>
-                <li>Not a real customer audit.</li>
-                <li>Not an assessment of an actual organization.</li>
-                <li>This project is a simulated portfolio exercise and does not represent client or employer audit work.</li>
-                <li>The sampling approach is illustrative and does not claim to reproduce any firm's proprietary audit methodology.</li>
-                <li>All case-study organizations, identities, evidence, findings, management responses, and remediation results are synthetic.</li>
-              </ul></section>
-              </div>
-            </div>
-          </div>
-        </main>
-      );
 
       return <>
         <header>
@@ -2991,7 +3204,6 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
               <button className={tab==="home" ? "active" : ""} onClick={() => setTab("home")}>Overview</button>
               <button className={tab==="tool" ? "active" : ""} onClick={() => setTab("tool")}>Access Review</button>
               <button className={tab==="case" ? "active" : ""} onClick={() => setTab("case")}>Audit Case Study</button>
-              <button className={tab==="about" ? "active" : ""} onClick={() => setTab("about")}>About</button>
             </nav>
           </div>
         </header>
@@ -3002,7 +3214,6 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
         {tab==="home" && <Home />}
         {tab==="tool" && <Tool />}
         {tab==="case" && <CaseStudy />}
-        {tab==="about" && <About />}
 
         <footer>
           <div className="container">Simulated technology risk and IT audit portfolio project</div>
@@ -3010,7 +3221,7 @@ AWS,Q2,System Owner,2025-06-30,2,2,Pass`
       </>;
     }
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<ControlProof />);
+    ReactDOM.createRoot(document.getElementById("root")).render(<TechnologyRiskAssessmentApp />);
   </script>
 </body>
 </html>
